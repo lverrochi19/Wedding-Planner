@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Weddings">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1208">
+<meta name="description" content="Track all your wedding invites, travel, outfits and weather in one place.">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1208'/><text y='.9em' font-size='72' x='50%' text-anchor='middle'>💍</text></svg>">
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Wedding%20Planner%22%2C%22short_name%22%3A%22Weddings%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f3ee%22%2C%22theme_color%22%3A%22%231a1208%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'22'%20fill%3D'%231a1208'%2F%3E%3Ctext%20y%3D'.9em'%20font-size%3D'72'%20x%3D'50%25'%20text-anchor%3D'middle'%3E%F0%9F%92%8D%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<title>Wedding Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f3ee; --bg2: #efe9e0; --border: #ddd5c8;
+    --gold: #a0622a; --gold-light: #c8864a;
+    --text: #1a1208; --text-mid: #4a3c2e; --text-soft: #7a6a58;
+    --green: #2e7d52; --red: #c0392b; --blue: #2c5f8a; --amber: #b06a00;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
+
+  .header { position: sticky; top: 0; z-index: 100; padding: 16px 20px 12px; background: #fff; border-bottom: 2px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; }
+  .app-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; }
+  .app-sub { font-size: 10px; letter-spacing: 0.18em; color: var(--text-soft); margin-top: 1px; text-transform: uppercase; }
+
+  .view { display: none; padding: 16px 16px 60px; }
+  .view.active { display: block; }
+
+  /* STATS */
+  .stats { display: flex; gap: 10px; margin-bottom: 18px; }
+  .stat { flex: 1; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 13px 8px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: var(--gold); line-height: 1; }
+  .stat-num.amber { color: var(--amber); }
+  .stat-label { font-size: 9px; letter-spacing: 0.16em; color: var(--text-soft); margin-top: 4px; text-transform: uppercase; }
+
+  /* WEDDING CARDS */
+  .wedding-card { cursor: pointer; background: #fff; border: 1.5px solid var(--border); border-left-width: 4px; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: box-shadow 0.15s; }
+  .wedding-card:active { box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+  .wc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .wc-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .wc-meta { font-size: 12px; color: var(--text-mid); margin-bottom: 8px; }
+  .wc-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .wc-days-num { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; line-height: 1; text-align: right; }
+  .wc-days-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); text-align: right; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* BUTTONS */
+  .btn { background: linear-gradient(135deg, #a0622a, #c8864a); color: #fff; border: none; border-radius: 50px; padding: 14px 24px; font-size: 14px; font-family: 'Jost', sans-serif; letter-spacing: 0.06em; cursor: pointer; font-weight: 500; width: 100%; transition: opacity 0.2s; box-shadow: 0 2px 8px rgba(160,98,42,0.3); }
+  .btn:active { opacity: 0.85; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn-outline { background: #fff; color: var(--gold); border: 1.5px solid var(--gold-light); border-radius: 50px; padding: 9px 18px; font-size: 12px; font-family: 'Jost', sans-serif; cursor: pointer; font-weight: 500; }
+  .btn-sm { background: var(--bg2); color: var(--gold); border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 16px; font-size: 12px; font-family: 'Jost', sans-serif; cursor: pointer; font-weight: 500; }
+  .btn-sm:disabled { opacity: 0.45; cursor: default; }
+  .btn-danger { background: #fff; color: var(--red); border: 1.5px solid #e8b4b0; border-radius: 50px; padding: 12px; font-size: 13px; font-family: 'Jost', sans-serif; cursor: pointer; width: 100%; margin-top: 24px; font-weight: 500; }
+  .btn-back { background: var(--bg2); color: var(--text-mid); border: 1.5px solid var(--border); border-radius: 50px; padding: 7px 14px; font-size: 12px; font-family: 'Jost', sans-serif; cursor: pointer; font-weight: 500; }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: var(--text-mid); text-transform: uppercase; margin-bottom: 7px; }
+  input[type=text], input[type=date], input[type=url], select, textarea {
+    background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--text); font-size: 15px;
+    font-family: 'Jost', sans-serif; width: 100%; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+  }
+  input::placeholder, textarea::placeholder { color: #b0a090; }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold-light); box-shadow: 0 0 0 3px rgba(200,134,74,0.15); }
+  select option { background: #fff; color: var(--text); }
+  textarea { min-height: 80px; resize: vertical; }
+
+  /* COLOR PICKER */
+  .color-row { display: flex; gap: 10px; flex-wrap: wrap; padding: 4px 0; }
+  .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s, transform 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .color-dot.selected { border-color: #1a1208; transform: scale(1.15); }
+
+  /* URL ENTRY SCREEN */
+  .url-screen { text-align: center; padding: 30px 10px; }
+  .url-screen h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .url-screen p { font-size: 13px; color: var(--text-soft); margin-bottom: 24px; line-height: 1.6; }
+  .url-input-wrap { position: relative; margin-bottom: 14px; }
+  .url-input-wrap input { padding-right: 48px; font-size: 14px; }
+  .url-paste-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--gold); color: #fff; border: none; border-radius: 8px; padding: 6px 10px; font-size: 11px; cursor: pointer; font-family: 'Jost', sans-serif; }
+
+  /* SCAN LOADING */
+  .scan-screen { text-align: center; padding: 60px 20px; }
+  .scan-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:0.7} }
+  .scan-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text); margin-bottom: 8px; }
+  .scan-status { font-size: 13px; color: var(--text-soft); }
+  .progress-bar { width: 100%; height: 4px; background: var(--bg2); border-radius: 2px; margin-top: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 2px; animation: progress 3s ease-in-out forwards; }
+  @keyframes progress { 0%{width:0%} 60%{width:75%} 100%{width:90%} }
+
+  /* SORT */
+  .sort-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .sort-row select { width: auto; padding: 7px 12px; font-size: 12px; }
+  .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-soft); }
+
+  /* TABS */
+  .tabs { display: flex; background: var(--bg2); border-radius: 12px; padding: 4px; margin-bottom: 16px; gap: 4px; }
+  .tab-btn { flex: 1; padding: 9px 4px; background: transparent; border: none; border-radius: 9px; color: var(--text-soft); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; font-family: 'Jost', sans-serif; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+  .tab-btn.active { background: #fff; color: var(--gold); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  /* DETAIL */
+  .detail-hero { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .dot-accent { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .detail-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .detail-date { font-size: 13px; color: var(--text-mid); margin-top: 3px; }
+  .detail-chips { display: flex; gap: 7px; flex-wrap: wrap; margin: 10px 0 16px; }
+  .detail-meta-row { font-size: 13px; color: var(--text-mid); margin-bottom: 6px; }
+
+  /* CARDS */
+  .info-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .info-card-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .info-row { margin-bottom: 10px; }
+  .info-key { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 2px; }
+  .info-val { font-size: 14px; color: var(--text); line-height: 1.5; }
+
+  /* APPAREL CARD */
+  .apparel-card { background: #fff8f0; border: 1.5px solid #e8c8a0; border-radius: 12px; padding: 16px; margin-top: 12px; }
+  .apparel-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0e8d8; }
+  .apparel-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .apparel-emoji { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .apparel-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .apparel-desc { font-size: 12px; color: var(--text-soft); line-height: 1.5; }
+  .apparel-tag { display: inline-block; margin-top: 4px; padding: 2px 8px; background: #fff3e0; color: #b06a00; border-radius: 10px; font-size: 10px; font-weight: 600; border: 1px solid #f0c060; }
+
+  /* TASKS */
+  .task-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .task-input-row input { flex: 1; }
+  .task-add-btn { background: var(--gold); color: #fff; border: none; border-radius: 10px; width: 46px; font-size: 24px; cursor: pointer; flex-shrink: 0; }
+  .task-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: #fff; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
+  .task-item:active { background: var(--bg2); }
+  .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; color: #fff; }
+  .task-check.done { background: var(--green); border-color: var(--green); }
+  .task-text { font-size: 14px; color: var(--text); }
+  .task-text.done { color: var(--text-soft); text-decoration: line-through; }
+
+  /* TRAVEL */
+  .travel-budget { text-align: center; padding: 16px; background: #fff8f0; border: 1.5px solid #e8c8a0; border-radius: 14px; margin-bottom: 16px; }
+  .travel-budget-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  .travel-budget-val { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--text); margin-top: 4px; }
+  .travel-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+  .travel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .travel-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .travel-sub { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+  .travel-tip { font-size: 12px; color: var(--text-mid); font-style: italic; margin-top: 8px; line-height: 1.5; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mid); margin: 16px 0 8px; }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .empty { text-align: center; padding: 50px 20px; }
+  .empty-icon { font-size: 44px; margin-bottom: 12px; }
+  .empty-text { color: var(--text-soft); font-size: 14px; line-height: 1.8; }
+  .no-content { text-align: center; padding: 36px 0; color: var(--text-soft); font-size: 14px; line-height: 1.7; }
+
+  #toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-80px); padding: 11px 22px; border-radius: 20px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; z-index: 999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { background: var(--green); color: #fff; }
+  #toast.error { background: var(--red); color: #fff; }
+
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(160,98,42,0.25); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MANUAL TOGGLE */
+  .manual-link { text-align: center; margin-top: 14px; }
+  .manual-link a { font-size: 12px; color: var(--text-soft); text-decoration: underline; cursor: pointer; }
+
+  /* PREFILLED BANNER */
+  .prefilled-banner { background: #d4edda; border: 1.5px solid #28a745; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: #155724; display: flex; align-items: center; gap: 8px; }
+
+  /* WEATHER */
+  .weather-hero { background: linear-gradient(135deg, #1a6b9a, #2e9fd4); border-radius: 16px; padding: 20px; color: #fff; text-align: center; margin-bottom: 14px; }
+  .weather-hero.live { background: linear-gradient(135deg, #1a7a4a, #2eb87a); }
+  .weather-hero.avg { background: linear-gradient(135deg, #6a5acd, #9b8de8); }
+  .weather-temp { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 600; line-height: 1; }
+  .weather-temp-sub { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+  .weather-desc { font-size: 16px; margin-top: 8px; font-weight: 500; }
+  .weather-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .weather-badge.live { background: rgba(255,255,255,0.25); }
+  .weather-badge.avg { background: rgba(255,255,255,0.2); }
+  .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .weather-stat-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 13px; text-align: center; }
+  .weather-stat-icon { font-size: 20px; margin-bottom: 4px; }
+  .weather-stat-val { font-size: 16px; font-weight: 600; color: var(--text); }
+  .weather-stat-label { font-size: 10px; color: var(--text-soft); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+  .forecast-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .forecast-day { font-size: 12px; font-weight: 600; color: var(--text-mid); width: 36px; flex-shrink: 0; }
+  .forecast-icon { font-size: 22px; flex-shrink: 0; }
+  .forecast-desc { font-size: 12px; color: var(--text-soft); flex: 1; }
+  .forecast-temps { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; flex-shrink: 0; }
+  .forecast-temps span { font-weight: 400; color: var(--text-soft); }
+  .weather-tip { background: #fff8f0; border: 1.5px solid #e8c8a0; border-radius: 12px; padding: 13px; margin-top: 12px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .weather-source { font-size: 11px; color: var(--text-soft); text-align: center; margin-top: 12px; }
+
+  /* LOCATION AUTOCOMPLETE */
+  .location-suggestion { padding: 11px 14px; font-size: 13px; color: var(--text); cursor: pointer; border-bottom: 1px solid var(--border); line-height: 1.4; }
+  .location-suggestion:last-child { border-bottom: none; }
+  .location-suggestion:active, .location-suggestion.highlighted { background: #fff8f0; }
+  .location-suggestion strong { color: var(--gold); }
+
+  /* TRAVEL REVAMP */
+  .travel-section-header { font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin:16px 0 8px;display:flex;align-items:center;gap:6px; }
+  .travel-option-card { background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+  .travel-option-card.best { border-color:#a0622a;background:#fff8f0; }
+  .travel-option-card.cheapest { border-color:#2e7d52;background:#f0faf4; }
+  .travel-option-card.alt { border-color:#2c5f8a;background:#f0f5ff; }
+  .travel-badge { display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px; }
+  .travel-badge.best { background:#a0622a;color:#fff; }
+  .travel-badge.cheapest { background:#2e7d52;color:#fff; }
+  .travel-badge.alt { background:#2c5f8a;color:#fff; }
+  .travel-route-title { font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px; }
+  .travel-route-sub { font-size:12px;color:var(--text-soft);margin-bottom:8px;line-height:1.5; }
+  .travel-price-row { display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.07); }
+  .travel-price { font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600; }
+  .travel-price.best { color:#a0622a; }
+  .travel-price.cheapest { color:#2e7d52; }
+  .travel-price.alt { color:#2c5f8a; }
+  .travel-price-label { font-size:10px;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.1em; }
+  .travel-legs { margin:8px 0;display:flex;flex-direction:column;gap:5px; }
+  .travel-leg { display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-mid); }
+  .travel-leg-icon { font-size:14px;flex-shrink:0; }
+  .travel-pros-cons { display:flex;gap:8px;margin-top:8px;flex-wrap:wrap; }
+  .travel-pro { background:#d4edda;color:#155724;border-radius:10px;padding:3px 9px;font-size:11px;font-weight:500; }
+  .travel-con { background:#f8d7da;color:#721c24;border-radius:10px;padding:3px 9px;font-size:11px;font-weight:500; }
+  .travel-book-btn { display:inline-block;margin-top:10px;padding:8px 16px;background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-mid);cursor:pointer;text-decoration:none; }
+  .travel-tips-card { background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px; }
+  .travel-tip-row { display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--bg2);font-size:13px;color:var(--text-mid);line-height:1.5; }
+  .travel-tip-row:last-child { border-bottom:none; }
+  .travel-summary-bar { background:linear-gradient(135deg,#a0622a,#c8864a);color:#fff;border-radius:14px;padding:16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center; }
+  .travel-summary-label { font-size:10px;opacity:0.8;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px; }
+  .travel-summary-val { font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600; }
+
+  /* ── FLIP COUNTER ────────────────────────────────────────── */
+  .flip-counter { display: flex; gap: 6px; align-items: flex-end; }
+  .flip-unit { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .flip-unit-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-soft); font-weight: 500; }
+  .flip-group { display: flex; gap: 2px; }
+  .flip-digit { width: 28px; height: 38px; background: var(--text); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; position: relative; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+  .flip-digit::after { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:rgba(255,255,255,0.15); }
+  .flip-digit.animating { animation: flipDown 0.35s ease forwards; }
+  @keyframes flipDown { 0%{transform:rotateX(0)} 50%{transform:rotateX(-90deg)} 100%{transform:rotateX(0)} }
+
+  /* small variant on dashboard cards */
+  .flip-digit-sm { width: 20px; height: 27px; border-radius: 4px; font-size: 16px; }
+  .flip-unit-label-sm { font-size: 8px; }
+
+  /* large variant on detail page */
+  .flip-digit-lg { width: 42px; height: 56px; border-radius: 8px; font-size: 34px; }
+  .flip-unit-label-lg { font-size: 10px; }
+
+  /* Next wedding hero on dashboard */
+  .next-wedding-hero { background: linear-gradient(135deg, #1a1208, #3a2810); color:#fff; border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; position: relative; overflow: hidden; }
+  .next-wedding-hero::before { content:'💍'; position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:52px; opacity:0.12; }
+  .next-hero-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+  .next-hero-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 2px; }
+  .next-hero-date { font-size: 12px; opacity: 0.7; margin-bottom: 14px; }
+  .next-hero-flip .flip-digit { background: rgba(255,255,255,0.15); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .next-hero-flip .flip-unit-label { color: rgba(255,255,255,0.55); }
+
+  /* Detail page countdown */
+  .detail-countdown { background: #fff; border: 1.5px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .detail-countdown-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 14px; }
+  .detail-countdown .flip-counter { justify-content: center; gap: 10px; }
+  .detail-countdown .flip-digit { background: var(--text); }
+  .detail-countdown-sub { font-size: 11px; color: var(--text-soft); margin-top: 12px; }
+  .passed-badge { display:inline-block; padding:6px 18px; background:#f0ebe4; border-radius:20px; font-size:13px; color:var(--text-soft); }
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="app-title">💍 Wedding Planner</div>
+      <div class="app-sub" id="header-sub">Your season at a glance</div>
+    </div>
+    <div id="header-back" style="display:none;">
+      <button class="btn-back" onclick="goBack()">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="view-dashboard" class="view active">
+  <div id="next-wedding-hero" style="display:none;"></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="stat-upcoming">0</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat"><div class="stat-num amber" id="stat-rsvp">0</div><div class="stat-label">RSVP Due</div></div>
+  </div>
+  <div class="sort-row">
+    <span class="section-title">All Weddings</span>
+    <select id="sort-select" onchange="renderDashboard()">
+      <option value="date">Sort: Date</option>
+      <option value="name">Sort: Name</option>
+    </select>
+  </div>
+  <div id="wedding-list"></div>
+  <button class="btn" onclick="showUrlScreen()" style="margin-top:8px;">+ Add Wedding</button>
+  <button class="btn-outline" style="width:100%;margin-top:10px;color:#c0392b;border-color:#e8b4b0;font-size:12px;" onclick="clearAll()">Clear All Data</button>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button class="btn-outline" style="flex:1;font-size:12px;padding:10px;" onclick="exportData()">📤 Export</button>
+    <label class="btn-outline" style="flex:1;font-size:12px;padding:10px;text-align:center;cursor:pointer;">
+      📥 Import<input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+    </label>
+  </div>
+  <button class="btn-outline" style="width:100%;margin-top:8px;font-size:12px;" onclick="changeApiKey()">🔑 Set / Change API Key</button>
+</div>
+
+<!-- ═══ URL ENTRY ═══ -->
+<div id="view-url" class="view">
+  <div class="url-screen">
+    <div style="font-size:48px;margin-bottom:12px;">🔗</div>
+    <h2>Enter the Wedding Website</h2>
+    <p>Paste the couple's wedding website and we'll automatically pull all the details — date, venue, dress code, registry, and what to wear.</p>
+    <div class="url-input-wrap">
+      <input type="url" id="url-input" placeholder="https://zola.com/wedding/..." onkeydown="if(event.key==='Enter')startScan()">
+    </div>
+    <button class="btn" onclick="startScan()" id="scan-btn">✦ Scan Website</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="font-size:12px;color:var(--text-soft);">or</span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+    <button class="btn-outline" style="width:100%;margin-top:14px;padding:13px;font-size:14px;" onclick="showManualForm(false)">✏️ Enter Details Manually</button>
+  </div>
+</div>
+
+<!-- ═══ SCANNING ═══ -->
+<div id="view-scanning" class="view">
+  <div class="scan-screen">
+    <div class="scan-icon">🔍</div>
+    <div class="scan-title">Scanning wedding website...</div>
+    <div class="scan-status" id="scan-status">Reading wedding details</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ═══ FORM (manual/review) ═══ -->
+<div id="view-form" class="view">
+  <div id="prefilled-banner" class="prefilled-banner" style="display:none;">
+    ✅ Details auto-filled from website! Review and save.
+  </div>
+  <div class="form-group"><label>Couple's Names</label><input type="text" id="f-name" placeholder="e.g. Sarah & James"></div>
+  <div class="form-group"><label>Wedding Date</label><input type="date" id="f-date"></div>
+  <div class="form-group">
+    <label>Location / City</label>
+    <div style="position:relative;">
+      <input type="text" id="f-location" placeholder="e.g. Westhampton Beach, NY" autocomplete="off" oninput="locationSearch(this.value)" onkeydown="locationKeydown(event)">
+      <div id="location-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #c8864a;border-top:none;border-radius:0 0 10px 10px;z-index:200;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+    </div>
+    <input type="hidden" id="f-lat">
+    <input type="hidden" id="f-lon">
+    <div id="location-confirmed" style="display:none;font-size:11px;color:#2e7d52;margin-top:5px;">✓ Location pinned for accurate weather</div>
+  </div>
+  <div class="form-group"><label>Ceremony Venue</label><input type="text" id="f-ceremony" placeholder="e.g. St. Patrick's Cathedral"></div>
+  <div class="form-group"><label>Reception Venue</label><input type="text" id="f-reception" placeholder="e.g. The Grand Ballroom"></div>
+  <div class="form-group"><label>Ceremony Time</label><input type="text" id="f-time" placeholder="e.g. 4:00 PM"></div>
+  <div class="form-group"><label>Dress Code</label><input type="text" id="f-dresscode" placeholder="e.g. Black Tie, Cocktail Attire..."></div>
+  <div class="form-group"><label>Registry</label><input type="text" id="f-registry" placeholder="e.g. Zola, Williams Sonoma..."></div>
+  <div class="form-group"><label>RSVP Deadline</label><input type="date" id="f-rsvpdeadline"></div>
+  <div class="form-group"><label>Wedding Website URL</label><input type="url" id="f-website" placeholder="https://..."></div>
+  <div class="form-group">
+    <label>Your Role</label>
+    <select id="f-role">
+      <option value="guest">Guest</option><option value="groomsman">Groomsman</option>
+      <option value="bridesmaid">Bridesmaid</option><option value="best man">Best Man</option>
+      <option value="maid of honor">Maid of Honor</option><option value="officiant">Officiant</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>RSVP Status</label>
+    <select id="f-rsvp">
+      <option value="pending">Pending</option><option value="attending">Attending</option>
+      <option value="declined">Declined</option><option value="maybe">Maybe</option>
+    </select>
+  </div>
+  <div class="form-group"><label>Color Tag</label><div class="color-row" id="color-picker"></div></div>
+  <div class="form-group"><label>Notes</label><textarea id="f-notes" placeholder="Any extra details from the website..."></textarea></div>
+  <button class="btn" onclick="saveWedding()" id="save-btn" style="margin-top:8px;">Save Wedding ✦</button>
+</div>
+
+<!-- ═══ DETAIL ═══ -->
+<div id="view-detail" class="view">
+  <div class="detail-hero">
+    <div class="dot-accent" id="detail-dot"></div>
+    <div><div class="detail-name" id="detail-name"></div><div class="detail-date" id="detail-date"></div></div>
+  </div>
+  <div class="detail-chips" id="detail-chips"></div>
+  <div id="detail-meta"></div>
+  <div id="detail-countdown"></div>
+  <div class="divider"></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('details')" id="tab-details">Details</button>
+    <button class="tab-btn" onclick="switchTab('apparel')" id="tab-apparel">👔 Apparel</button>
+    <button class="tab-btn" onclick="switchTab('tasks')" id="tab-tasks">Tasks</button>
+    <button class="tab-btn" onclick="switchTab('travel')" id="tab-travel">Travel</button>
+    <button class="tab-btn" onclick="switchTab('weather');loadWeatherTab()" id="tab-weather">🌤 Weather</button>
+  </div>
+  <div id="tc-details">
+    <div class="btn-row">
+      <button class="btn-sm" onclick="editCurrent()">✎ Edit Details</button>
+      <button class="btn-sm" id="rescan-btn" onclick="rescanWebsite()">↻ Re-scan Site</button>
+    </div>
+    <div id="detail-info"></div>
+    <div id="detail-notes"></div>
+    <button class="btn-danger" onclick="deleteCurrent()">🗑 Remove Wedding</button>
+  </div>
+  <div id="tc-apparel" style="display:none;">
+    <div id="apparel-content"></div>
+  </div>
+  <div id="tc-tasks" style="display:none;">
+    <div class="task-input-row">
+      <input type="text" id="task-input" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
+      <button class="task-add-btn" onclick="addTask()">+</button>
+    </div>
+    <div id="task-list"></div>
+  </div>
+  <div id="tc-travel" style="display:none;">
+    <div id="travel-origin-row" style="margin-bottom:12px;">
+      <label style="display:block;font-size:11px;font-weight:500;letter-spacing:0.14em;color:var(--text-mid);text-transform:uppercase;margin-bottom:7px;">Flying from</label>
+      <div style="position:relative;">
+        <input type="text" id="travel-origin" placeholder="e.g. New York City, NY" autocomplete="off"
+          oninput="originSearch(this.value)" onkeydown="originKeydown(event)"
+          style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Jost',sans-serif;width:100%;outline:none;">
+        <div id="origin-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #c8864a;border-top:none;border-radius:0 0 10px 10px;z-index:200;max-height:180px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+      </div>
+    </div>
+    <button class="btn" id="travel-btn" onclick="findTravel()" style="margin-bottom:14px;">✈ Plan My Trip</button>
+    <div id="travel-results"></div>
+  </div>
+  <div id="tc-weather" style="display:none;">
+    <div id="weather-content"></div>
+  </div>
+</div>
+
+<script>
+const PALETTE = ['#a0622a','#c0392b','#2e7d52','#2c5f8a','#7b3fa0','#b06a00','#1a6b5a','#8a4a2a'];
+const RSVP_C = {
+  pending:   {bg:'#fff3cd',color:'#856404',border:'#ffc107'},
+  attending: {bg:'#d4edda',color:'#155724',border:'#28a745'},
+  declined:  {bg:'#f8d7da',color:'#721c24',border:'#dc3545'},
+  maybe:     {bg:'#cce5ff',color:'#004085',border:'#007bff'},
+};
+
+let weddings = [];
+try { weddings = JSON.parse(localStorage.getItem('wp_weddings') || '[]'); } catch(e) {}
+let currentId = null, editMode = false, selectedColor = PALETTE[0];
+
+function getApiKey() { return localStorage.getItem('wp_apikey') || ''; }
+function saveApiKey(k) { localStorage.setItem('wp_apikey', k.trim()); }
+function apiHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'anthropic-dangerous-direct-browser-access': 'true',
+    'x-api-key': getApiKey(),
+    'anthropic-version': '2023-06-01'
+  };
+}
+function changeApiKey() {
+  const current = getApiKey();
+  const msg = current
+    ? 'Current key: ...'+current.slice(-6)+'\nEnter a new key to replace it, or cancel to keep current:'
+    : 'Enter your Anthropic API key (starts with "sk-ant-..."):\n\nGet one at: console.anthropic.com';
+  const k = prompt(msg);
+  if(k && k.trim().startsWith('sk-')) { saveApiKey(k.trim()); toast('API key saved! ✓'); }
+  else if(k) { toast('That doesn\'t look like a valid key', 'error'); }
+}
+
+function checkApiKey() {
+  if(!getApiKey()) {
+    const k = prompt('Enter your Anthropic API key to enable AI features.\n(It starts with "sk-ant-...")\n\nGet one at: console.anthropic.com');
+    if(k && k.trim().startsWith('sk-')) { saveApiKey(k.trim()); toast('API key saved!'); return true; }
+    toast('API key required for AI features', 'error'); return false;
+  }
+  return true;
+}
+
+function save() { try { localStorage.setItem('wp_weddings', JSON.stringify(weddings)); } catch(e){} }
+function getW(id) { return weddings.find(w => w.id === id); }
+function daysUntil(d) { if(!d) return 9999; return Math.ceil((new Date(d+'T00:00:00') - new Date()) / 86400000); }
+
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 2800);
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  const isHome = id === 'dashboard';
+  document.getElementById('header-back').style.display = isHome ? 'none' : 'block';
+  document.getElementById('header-sub').style.display = isHome ? 'block' : 'none';
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  const active = document.querySelector('.view.active')?.id;
+  if(active === 'view-url' || active === 'view-form') { showView('dashboard'); renderDashboard(); return; }
+  if(active === 'view-scanning') return;
+  if(editMode) { editMode=false; showDetail(currentId); return; }
+  showView('dashboard'); renderDashboard();
+}
+
+function chip(text,bg,color,border) {
+  return `<span class="chip" style="background:${bg};color:${color};border:1.5px solid ${border}">${text}</span>`;
+}
+function rsvpChip(r) { const c=RSVP_C[r]||{bg:'#eee',color:'#555',border:'#ccc'}; return chip(r,c.bg,c.color,c.border); }
+function roleChip(r) { return chip(r,'#f0ebe4','#4a3c2e','#ddd5c8'); }
+function fmtDate(d) { return d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'Date TBD'; }
+function fmtShort(d) { return d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''; }
+
+
+// ── FLIP COUNTER ─────────────────────────────────────────────────────────────
+function pad2(n) { return String(Math.max(0,n)).padStart(2,'0'); }
+
+function flipDigitHTML(ch, size='') {
+  return `<div class="flip-digit${size ? ' flip-digit-'+size : ''}">${ch}</div>`;
+}
+
+function flipGroupHTML(val, size='') {
+  const s = pad2(val);
+  return `<div class="flip-group">${flipDigitHTML(s[0],size)}${flipDigitHTML(s[1],size)}</div>`;
+}
+
+function flipUnitHTML(val, label, size='') {
+  return `<div class="flip-unit">
+    ${flipGroupHTML(val, size)}
+    <div class="flip-unit-label${size ? ' flip-unit-label-'+size : ''}">${label}</div>
+  </div>`;
+}
+
+function flipSepHTML(size='') {
+  const h = size==='lg' ? 56 : size==='sm' ? 27 : 38;
+  return `<div style="font-family:'Cormorant Garamond',serif;font-size:${size==='lg'?28:size==='sm'?14:20}px;color:var(--text-soft);padding-bottom:${size==='lg'?18:size==='sm'?10:14}px;line-height:1;">:</div>`;
+}
+
+function buildCountdown(date, size='') {
+  const now = new Date();
+  const target = new Date(date + 'T00:00:00');
+  const diffMs = target - now;
+
+  if(diffMs <= 0) return null; // passed
+
+  const totalSecs = Math.floor(diffMs / 1000);
+  const days  = Math.floor(totalSecs / 86400);
+  const hours = Math.floor((totalSecs % 86400) / 3600);
+  const mins  = Math.floor((totalSecs % 3600) / 60);
+  const secs  = totalSecs % 60;
+
+  // Decide which units to show based on time remaining
+  let units;
+  if(days >= 60) {
+    // months + weeks
+    const months = Math.floor(days / 30);
+    const weeks  = Math.floor((days % 30) / 7);
+    const remDays = days % 7;
+    units = [
+      flipUnitHTML(months, 'months', size),
+      flipSepHTML(size),
+      flipUnitHTML(weeks, 'weeks', size),
+      flipSepHTML(size),
+      flipUnitHTML(remDays, 'days', size),
+    ];
+  } else if(days >= 7) {
+    const weeks  = Math.floor(days / 7);
+    const remDays = days % 7;
+    units = [
+      flipUnitHTML(weeks, 'weeks', size),
+      flipSepHTML(size),
+      flipUnitHTML(remDays, 'days', size),
+      flipSepHTML(size),
+      flipUnitHTML(hours, 'hrs', size),
+    ];
+  } else if(days >= 1) {
+    units = [
+      flipUnitHTML(days, 'days', size),
+      flipSepHTML(size),
+      flipUnitHTML(hours, 'hrs', size),
+      flipSepHTML(size),
+      flipUnitHTML(mins, 'min', size),
+    ];
+  } else {
+    // day-of: show hours/mins/secs
+    units = [
+      flipUnitHTML(hours, 'hrs', size),
+      flipSepHTML(size),
+      flipUnitHTML(mins, 'min', size),
+      flipSepHTML(size),
+      flipUnitHTML(secs, 'sec', size),
+    ];
+  }
+
+  return `<div class="flip-counter">${units.join('')}</div>`;
+}
+
+// Small flip for dashboard cards
+function smallFlipHTML(days, color) {
+  if(days <= 0) return `<div style="font-size:11px;color:#aaa;font-weight:500;padding-top:4px;">Passed</div>`;
+  const date = new Date(); date.setDate(date.getDate() + days);
+  const dateStr = date.toISOString().split('T')[0];
+  const html = buildCountdown(dateStr, 'sm');
+  if(!html) return `<div style="font-size:11px;color:#aaa;">Passed</div>`;
+  // Tint the flip digits with wedding color
+  return html.replace(/class="flip-digit /g, `class="flip-digit `).replace(
+    /class="flip-digit sm"/g,
+    `class="flip-digit flip-digit-sm" style="background:${color}"`
+  );
+}
+
+// Render next-wedding hero on dashboard
+function renderNextHero(weddings) {
+  const el = document.getElementById('next-wedding-hero');
+  const upcoming = weddings
+    .filter(w => w.date && daysUntil(w.date) > 0)
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  if(!upcoming.length) { el.style.display='none'; return; }
+  const w = upcoming[0];
+  const days = daysUntil(w.date);
+  const cd = buildCountdown(w.date, 'lg');
+
+  el.style.display = 'block';
+  el.innerHTML = `<div class="next-wedding-hero" style="border-left: 4px solid ${w.color||'#a0622a'};" onclick="showDetail(${w.id})">
+    <div class="next-hero-label">Next Wedding</div>
+    <div class="next-hero-name">${w.name}</div>
+    <div class="next-hero-date">${fmtDate(w.date)}${w.location ? ' · ' + w.location : ''}</div>
+    <div class="next-hero-flip">
+      ${cd || `<div class="passed-badge">Today! 🎉</div>`}
+    </div>
+  </div>`;
+}
+
+// Render large flip on detail page
+function renderDetailCountdown(w) {
+  const el = document.getElementById('detail-countdown');
+  if(!el || !w.date) { if(el) el.innerHTML=''; return; }
+  const days = daysUntil(w.date);
+
+  if(days < 0) {
+    el.innerHTML = `<div class="detail-countdown"><div class="passed-badge">💍 Wedding has passed — congratulations to the couple!</div></div>`;
+    return;
+  }
+  if(days === 0) {
+    el.innerHTML = `<div class="detail-countdown"><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);">🎉 Today's the Day!</div></div>`;
+    return;
+  }
+
+  const cd = buildCountdown(w.date, 'lg');
+  const milestone = days <= 7 ? '🔴 This week!' : days <= 30 ? '🟡 This month' : days <= 90 ? '🟢 Coming up' : '📅 Save the date';
+
+  el.innerHTML = `<div class="detail-countdown">
+    <div class="detail-countdown-label">Countdown to the Wedding</div>
+    ${cd}
+    <div class="detail-countdown-sub">${milestone} · ${days} days total</div>
+  </div>`;
+
+  // Live tick for day-of (hours/mins/secs)
+  if(days === 0) {
+    if(window._cdTimer) clearInterval(window._cdTimer);
+    window._cdTimer = setInterval(() => renderDetailCountdown(w), 1000);
+  }
+}
+
+
+// ─── DASHBOARD ───────────────────────────────────────────
+function renderDashboard() {
+  const sort = document.getElementById('sort-select').value;
+  const sorted = [...weddings].sort((a,b)=>sort==='date'?new Date(a.date||'9999')-new Date(b.date||'9999'):(a.name||'').localeCompare(b.name||''));
+  document.getElementById('stat-total').textContent = weddings.length;
+  document.getElementById('stat-upcoming').textContent = weddings.filter(w=>daysUntil(w.date)>0).length;
+  document.getElementById('stat-rsvp').textContent = weddings.filter(w=>w.rsvp==='pending').length;
+  const list = document.getElementById('wedding-list');
+  renderNextHero(weddings);
+  if(!weddings.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">💍</div><div class="empty-text">No weddings yet.<br>Tap <strong>+ Add Wedding</strong> to get started!</div></div>`;
+    return;
+  }
+  renderNextHero(weddings);
+  list.innerHTML = sorted.map(w=>{
+    const days=daysUntil(w.date);
+    const pending=(w.tasks||[]).filter(t=>!t.done).length;
+    const daysHtml = smallFlipHTML(days, w.color||'#a0622a');
+    return `<div class="wedding-card" style="border-left-color:${w.color||'#a0622a'}" onclick="showDetail(${w.id})">
+      <div class="wc-top">
+        <div style="flex:1;min-width:0;">
+          <div class="wc-name">${w.name||'Unnamed'}</div>
+          <div class="wc-meta">${w.date?fmtShort(w.date):'Date TBD'}${w.location?' · '+w.location:''}</div>
+          <div class="wc-chips">${rsvpChip(w.rsvp||'pending')}${roleChip(w.role||'guest')}${pending?chip(pending+' tasks','#fff3cd','#856404','#ffc107'):''}</div>
+        </div>
+        <div style="flex-shrink:0;margin-left:12px;padding-top:2px;">${daysHtml}</div>
+      </div></div>`;
+  }).join('');
+}
+
+function clearAll() {
+  if(!confirm('Clear all wedding data?')) return;
+  weddings=[]; save(); renderDashboard(); toast('All data cleared');
+}
+
+// ─── URL SCAN FLOW ───────────────────────────────────────
+function showUrlScreen() {
+  document.getElementById('url-input').value = '';
+  showView('url');
+}
+
+async function startScan() {
+  if(!checkApiKey()) return;
+  const url = document.getElementById('url-input').value.trim();
+  if(!url) { toast('Please enter a URL first', 'error'); return; }
+
+  showView('scanning');
+  const statuses = ['Reading wedding details...','Extracting venue info...','Checking dress code...','Building attire guide...'];
+  let si = 0;
+  const statusEl = document.getElementById('scan-status');
+  const interval = setInterval(() => { if(si < statuses.length-1) statusEl.textContent = statuses[++si]; }, 1200);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Visit and extract all information from this wedding website: ${url}
+
+Return ONLY valid JSON (no markdown, no backticks, no explanation whatsoever):
+{
+  "couple_names": null,
+  "date": null,
+  "location": null,
+  "ceremony_venue": null,
+  "ceremony_time": null,
+  "reception_venue": null,
+  "dresscode": null,
+  "rsvp_deadline": null,
+  "registry": null,
+  "accommodation": null,
+  "schedule": null,
+  "notes": null,
+  "apparel": {
+    "dresscode_label": null,
+    "description": null,
+    "items": [
+      { "emoji": "👔", "name": "item name", "description": "what to wear / avoid", "tip": "shopping tip or specific suggestion" }
+    ],
+    "colors_to_wear": null,
+    "colors_to_avoid": null,
+    "weather_note": null
+  }
+}
+
+For the apparel section, provide 4-6 specific clothing items a wedding guest would need based on the dress code and venue/season. Be specific and practical. If date is found, format it as YYYY-MM-DD.`
+        }]
+      })
+    });
+
+    clearInterval(interval);
+    if(!res.ok) throw new Error('API error ' + res.status);
+
+    const data = await res.json();
+    const rawText = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed = null;
+    const m = rawText.match(/\{[\s\S]*\}/);
+    if(m) { try { parsed = JSON.parse(m[0]); } catch(e) {} }
+
+    if(!parsed) throw new Error('Could not parse response');
+
+    // Pre-fill form
+    showManualForm(true, parsed, url);
+    toast('Website scanned! Review the details ✦');
+  } catch(e) {
+    clearInterval(interval);
+    console.error(e);
+    toast('Could not scan website — enter details manually', 'error');
+    showManualForm(false, null, url);
+  }
+}
+
+function showManualForm(prefilled, data, websiteUrl) {
+  editMode = false; selectedColor = PALETTE[0];
+  document.getElementById('prefilled-banner').style.display = prefilled ? 'flex' : 'none';
+
+  // Clear all
+  ['f-name','f-location','f-ceremony','f-reception','f-time','f-dresscode','f-registry','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-lat').value='';
+  document.getElementById('f-lon').value='';
+  document.getElementById('location-confirmed').style.display='none';
+  document.getElementById('location-suggestions').style.display='none';
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-rsvpdeadline').value = '';
+  document.getElementById('f-role').value = 'guest';
+  document.getElementById('f-rsvp').value = 'pending';
+  document.getElementById('f-website').value = websiteUrl || '';
+
+  if(data) {
+    if(data.couple_names) document.getElementById('f-name').value = data.couple_names;
+    if(data.date) document.getElementById('f-date').value = data.date;
+    if(data.location) document.getElementById('f-location').value = data.location;
+    if(data.lat) { document.getElementById('f-lat').value = data.lat; document.getElementById('f-lon').value = data.lon; document.getElementById('location-confirmed').style.display='block'; }
+    if(data.ceremony_venue) document.getElementById('f-ceremony').value = data.ceremony_venue;
+    if(data.reception_venue) document.getElementById('f-reception').value = data.reception_venue;
+    if(data.ceremony_time) document.getElementById('f-time').value = data.ceremony_time;
+    if(data.dresscode) document.getElementById('f-dresscode').value = data.dresscode;
+    if(data.registry) document.getElementById('f-registry').value = data.registry;
+    if(data.rsvp_deadline) document.getElementById('f-rsvpdeadline').value = data.rsvp_deadline;
+    const notes = [data.accommodation, data.schedule, data.notes].filter(Boolean).join(' | ');
+    if(notes) document.getElementById('f-notes').value = notes;
+    // Store apparel data for later
+    window._pendingApparel = data.apparel || null;
+  } else {
+    window._pendingApparel = null;
+  }
+
+  document.getElementById('save-btn').textContent = 'Save Wedding ✦';
+  buildColorPicker();
+  showView('form');
+}
+
+// ─── COLOR PICKER ────────────────────────────────────────
+function buildColorPicker() {
+  document.getElementById('color-picker').innerHTML = PALETTE.map(c=>
+    `<div class="color-dot ${c===selectedColor?'selected':''}" style="background:${c}" onclick="selectColor('${c}',this)"></div>`
+  ).join('');
+}
+function selectColor(c,el) {
+  selectedColor=c;
+  document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── EDIT ────────────────────────────────────────────────
+function editCurrent() {
+  const w=getW(currentId); editMode=true; selectedColor=w.color||PALETTE[0];
+  document.getElementById('prefilled-banner').style.display='none';
+  document.getElementById('f-name').value=w.name||'';
+  document.getElementById('f-date').value=w.date||'';
+  document.getElementById('f-location').value=w.location||'';
+  document.getElementById('f-lat').value=w.lat||'';
+  document.getElementById('f-lon').value=w.lon||'';
+  if(w.lat){ document.getElementById('location-confirmed').style.display='block'; }
+  document.getElementById('f-ceremony').value=w.ceremony_venue||'';
+  document.getElementById('f-reception').value=w.reception_venue||'';
+  document.getElementById('f-time').value=w.ceremony_time||'';
+  document.getElementById('f-dresscode').value=w.dresscode||'';
+  document.getElementById('f-registry').value=w.registry||'';
+  document.getElementById('f-rsvpdeadline').value=w.rsvpDeadline||'';
+  document.getElementById('f-website').value=w.website||'';
+  document.getElementById('f-role').value=w.role||'guest';
+  document.getElementById('f-rsvp').value=w.rsvp||'pending';
+  document.getElementById('f-notes').value=w.notes||'';
+  document.getElementById('save-btn').textContent='Save Changes';
+  window._pendingApparel = w.apparel || null;
+  buildColorPicker(); showView('form');
+}
+
+// ─── SAVE ────────────────────────────────────────────────
+function saveWedding() {
+  const name=document.getElementById('f-name').value.trim();
+  const date=document.getElementById('f-date').value;
+  if(!name||!date){toast('Name and date are required','error');return;}
+  const data={
+    name, date,
+    location: document.getElementById('f-location').value.trim(),
+    lat: document.getElementById('f-lat').value || null,
+    lon: document.getElementById('f-lon').value || null,
+    ceremony_venue: document.getElementById('f-ceremony').value.trim(),
+    reception_venue: document.getElementById('f-reception').value.trim(),
+    ceremony_time: document.getElementById('f-time').value.trim(),
+    dresscode: document.getElementById('f-dresscode').value.trim(),
+    registry: document.getElementById('f-registry').value.trim(),
+    rsvpDeadline: document.getElementById('f-rsvpdeadline').value,
+    website: document.getElementById('f-website').value.trim(),
+    role: document.getElementById('f-role').value,
+    rsvp: document.getElementById('f-rsvp').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    color: selectedColor,
+    apparel: window._pendingApparel || null,
+  };
+  if(editMode&&currentId){
+    const idx=weddings.findIndex(w=>w.id===currentId);
+    weddings[idx]={...weddings[idx],...data};
+    save(); toast('Wedding updated!'); showDetail(currentId);
+  } else {
+    const nw={...data, id:Date.now(), tasks:[], travel:null};
+    weddings.push(nw); save(); toast('Wedding added! 🎉'); currentId=nw.id; showDetail(nw.id);
+  }
+  editMode=false; window._pendingApparel=null;
+}
+
+// ─── DETAIL ──────────────────────────────────────────────
+function showDetail(id) {
+  currentId=id;
+  const w=getW(id); const days=daysUntil(w.date);
+  document.getElementById('detail-dot').style.background=w.color||'#a0622a';
+  document.getElementById('detail-name').textContent=w.name;
+  document.getElementById('detail-date').textContent=fmtDate(w.date);
+  const daysC=days>0&&days<9999?chip(days+'d away','#e8f0fe','#1a4a9a','#90b4e8'):chip('passed','#f0f0f0','#888','#ccc');
+  document.getElementById('detail-chips').innerHTML=rsvpChip(w.rsvp||'pending')+roleChip(w.role||'guest')+daysC;
+  let meta='';
+  if(w.location) meta+=`<div class="detail-meta-row">📍 ${w.location}</div>`;
+  if(w.ceremony_time) meta+=`<div class="detail-meta-row">🕐 Ceremony at ${w.ceremony_time}</div>`;
+  if(w.dresscode) meta+=`<div class="detail-meta-row">👔 ${w.dresscode}</div>`;
+  if(w.website) meta+=`<div class="detail-meta-row" style="color:#2c5f8a;word-break:break-all;">🔗 ${w.website}</div>`;
+  if(w.rsvpDeadline) meta+=`<div class="detail-meta-row">📅 RSVP by ${fmtShort(w.rsvpDeadline)}</div>`;
+  document.getElementById('detail-meta').innerHTML=meta;
+
+  renderDetailInfo(w);
+  renderApparel(w);
+  renderNotes(w);
+  renderTasks(w);
+  renderTravel(w);
+  switchTab('details');
+  showView('detail');
+}
+
+function switchTab(tab) {
+  ['details','apparel','tasks','travel','weather'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('tc-'+t).style.display=t===tab?'block':'none';
+  });
+}
+
+function renderDetailInfo(w) {
+  const fields = [
+    ['Ceremony Venue', w.ceremony_venue],
+    ['Reception Venue', w.reception_venue],
+    ['Registry', w.registry],
+    ['Accommodation', w.accommodation],
+  ].filter(([,v])=>v);
+  const el = document.getElementById('detail-info');
+  if(!fields.length){el.innerHTML='';return;}
+  el.innerHTML = `<div class="info-card"><div class="info-card-title">📋 Wedding Info</div>${
+    fields.map(([k,v])=>`<div class="info-row"><div class="info-key">${k}</div><div class="info-val">${v}</div></div>`).join('')
+  }</div>`;
+}
+
+function renderNotes(w) {
+  document.getElementById('detail-notes').innerHTML=w.notes
+    ?`<div class="info-card" style="margin-top:10px;"><div class="info-card-title">📝 Notes</div><div style="font-size:14px;color:#4a3c2e;line-height:1.6;">${w.notes}</div></div>`:'';
+}
+
+function renderApparel(w) {
+  const el = document.getElementById('apparel-content');
+  if(!w.apparel) {
+    el.innerHTML = `<div style="text-align:center;padding:30px 0;">
+      <div style="font-size:36px;margin-bottom:12px;">👔</div>
+      <div style="color:var(--text-soft);font-size:13px;line-height:1.7;margin-bottom:20px;">No apparel guide yet.<br>Scan the wedding website to get outfit suggestions.</div>
+      <button class="btn-sm" onclick="rescanWebsite()">↻ Scan Website for Attire</button>
+    </div>`;
+    return;
+  }
+  const a = w.apparel;
+  let html = '';
+
+  // Header
+  if(a.dresscode_label) {
+    html += `<div class="apparel-card" style="background:#fff3e0;border-color:#f0c060;margin-bottom:12px;">
+      <div class="info-card-title">👑 Dress Code</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;">${a.dresscode_label}</div>
+      ${a.description?`<div style="font-size:13px;color:var(--text-mid);line-height:1.6;">${a.description}</div>`:''}
+    </div>`;
+  }
+
+  // Colors
+  if(a.colors_to_wear || a.colors_to_avoid) {
+    html += `<div class="info-card" style="margin-bottom:12px;">`;
+    if(a.colors_to_wear) html += `<div class="info-row"><div class="info-key">✅ Colors to Wear</div><div class="info-val">${a.colors_to_wear}</div></div>`;
+    if(a.colors_to_avoid) html += `<div class="info-row"><div class="info-key">🚫 Colors to Avoid</div><div class="info-val">${a.colors_to_avoid}</div></div>`;
+    if(a.weather_note) html += `<div class="info-row"><div class="info-key">🌤 Weather Note</div><div class="info-val">${a.weather_note}</div></div>`;
+    html += `</div>`;
+  }
+
+  // Items
+  if(a.items?.length) {
+    html += `<div class="apparel-card">
+      <div class="info-card-title">🧳 What to Pack</div>`;
+    html += a.items.map(item=>`
+      <div class="apparel-item">
+        <div class="apparel-emoji">${item.emoji||'👗'}</div>
+        <div>
+          <div class="apparel-name">${item.name}</div>
+          <div class="apparel-desc">${item.description}</div>
+          ${item.tip?`<div class="apparel-tag">💡 ${item.tip}</div>`:''}
+        </div>
+      </div>`).join('');
+    html += `</div>`;
+  }
+
+  el.innerHTML = html || `<div class="no-content">No apparel info found.</div>`;
+}
+
+// ─── RESCAN ──────────────────────────────────────────────
+async function rescanWebsite() {
+  if(!checkApiKey()) return;
+  const w = getW(currentId);
+  if(!w.website) { toast('No website saved for this wedding', 'error'); return; }
+  const btn = document.getElementById('rescan-btn');
+  if(btn) { btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Scanning...'; }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Visit this wedding website and extract details: ${w.website}
+
+Return ONLY valid JSON (no markdown, no backticks):
+{
+  "couple_names": null, "date": null, "location": null,
+  "ceremony_venue": null, "ceremony_time": null, "reception_venue": null,
+  "dresscode": null, "rsvp_deadline": null, "registry": null,
+  "accommodation": null, "schedule": null, "notes": null,
+  "apparel": {
+    "dresscode_label": null, "description": null,
+    "items": [{ "emoji": "👔", "name": "", "description": "", "tip": "" }],
+    "colors_to_wear": null, "colors_to_avoid": null, "weather_note": null
+  }
+}
+
+Focus especially on the apparel/dress code section. Provide 4-6 specific clothing items based on dress code, venue, and season. If date found, format YYYY-MM-DD.`
+        }]
+      })
+    });
+    if(!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const rawText = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed = null;
+    const m = rawText.match(/\{[\s\S]*\}/);
+    if(m) { try { parsed = JSON.parse(m[0]); } catch(e){} }
+    if(!parsed) throw new Error('Parse failed');
+
+    // Update wedding with new data
+    const idx = weddings.findIndex(x=>x.id===currentId);
+    if(idx>=0) {
+      if(parsed.apparel) weddings[idx].apparel = parsed.apparel;
+      if(parsed.dresscode) weddings[idx].dresscode = parsed.dresscode;
+      if(parsed.ceremony_venue) weddings[idx].ceremony_venue = parsed.ceremony_venue;
+      if(parsed.reception_venue) weddings[idx].reception_venue = parsed.reception_venue;
+      if(parsed.ceremony_time) weddings[idx].ceremony_time = parsed.ceremony_time;
+      if(parsed.registry) weddings[idx].registry = parsed.registry;
+      save();
+    }
+    showDetail(currentId);
+    toast('Re-scanned! Apparel guide updated ✦');
+  } catch(e) {
+    console.error(e);
+    toast('Re-scan failed', 'error');
+  }
+  if(btn) { btn.disabled=false; btn.innerHTML='↻ Re-scan Site'; }
+}
+
+// ─── TASKS ───────────────────────────────────────────────
+function renderTasks(w) {
+  const tasks=w.tasks||[];
+  document.getElementById('task-list').innerHTML=!tasks.length
+    ?`<div class="no-content">No tasks yet — add one above!</div>`
+    :tasks.map(t=>`<div class="task-item" onclick="toggleTask(${t.id})">
+      <div class="task-check ${t.done?'done':''}">${t.done?'✓':''}</div>
+      <span class="task-text ${t.done?'done':''}">${t.text}</span></div>`).join('');
+}
+
+function addTask() {
+  const input=document.getElementById('task-input');
+  const text=input.value.trim(); if(!text) return;
+  const w=getW(currentId); w.tasks=w.tasks||[];
+  w.tasks.push({id:Date.now(),text,done:false});
+  save(); input.value=''; renderTasks(w);
+}
+
+function toggleTask(taskId) {
+  const w=getW(currentId);
+  const t=(w.tasks||[]).find(t=>t.id===taskId);
+  if(t){t.done=!t.done;save();renderTasks(w);}
+}
+
+// ─── DELETE ──────────────────────────────────────────────
+function deleteCurrent() {
+  if(!confirm('Remove this wedding?')) return;
+  weddings=weddings.filter(w=>w.id!==currentId);
+  save();toast('Removed');showView('dashboard');renderDashboard();
+}
+
+// ─── TRAVEL ──────────────────────────────────────────────
+let _originResults = [], _originHighlight = -1, _originTimer = null;
+
+function originSearch(val) {
+  const box = document.getElementById('origin-suggestions');
+  if(!val || val.length < 2) { box.style.display='none'; return; }
+  clearTimeout(_originTimer);
+  _originTimer = setTimeout(() => {
+    const results = searchCities(val);
+    _originResults = results;
+    _originHighlight = -1;
+    if(!results.length) { box.style.display='none'; return; }
+    box.innerHTML = results.map((r,i) =>
+      `<div class="location-suggestion" onclick="selectOrigin(${i})"><strong>${r.name}</strong>, ${r.state}</div>`
+    ).join('');
+    box.style.display = 'block';
+  }, 150);
+}
+
+function selectOrigin(idx) {
+  const r = _originResults[idx];
+  if(!r) return;
+  document.getElementById('travel-origin').value = r.name + ', ' + r.state;
+  document.getElementById('origin-suggestions').style.display = 'none';
+}
+
+function originKeydown(e) {
+  const box = document.getElementById('origin-suggestions');
+  const items = box.querySelectorAll('.location-suggestion');
+  if(!items.length || box.style.display==='none') return;
+  if(e.key==='ArrowDown') { e.preventDefault(); _originHighlight=Math.min(_originHighlight+1,items.length-1); items.forEach((el,i)=>el.classList.toggle('highlighted',i===_originHighlight)); }
+  else if(e.key==='ArrowUp') { e.preventDefault(); _originHighlight=Math.max(_originHighlight-1,0); items.forEach((el,i)=>el.classList.toggle('highlighted',i===_originHighlight)); }
+  else if(e.key==='Enter'&&_originHighlight>=0) { e.preventDefault(); selectOrigin(_originHighlight); }
+  else if(e.key==='Escape') { box.style.display='none'; }
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('#origin-suggestions') && e.target.id !== 'travel-origin') {
+    const box = document.getElementById('origin-suggestions');
+    if(box) box.style.display = 'none';
+  }
+});
+
+function renderTravel(w) {
+  const el = document.getElementById('travel-results');
+  if(!w.travel) {
+    el.innerHTML = `<div class="no-content" style="padding:30px 0;">
+      <div style="font-size:36px;margin-bottom:10px;">✈️</div>
+      Enter your departure city above and tap <strong>Plan My Trip</strong> for smart route options — not just the obvious flight.
+    </div>`;
+    return;
+  }
+  const t = w.travel;
+  let html = '';
+
+  // Summary bar
+  if(t.budget_range) {
+    html += `<div class="travel-summary-bar">
+      <div><div class="travel-summary-label">Est. Total Trip Cost</div><div class="travel-summary-val">${t.budget_range}</div></div>
+      <div style="text-align:right"><div class="travel-summary-label">Wedding Date</div><div class="travel-summary-val" style="font-size:15px;">${w.date ? new Date(w.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—'}</div></div>
+    </div>`;
+  }
+
+  // Route options (best, cheapest, alternatives)
+  const routeOrder = [
+    {key:'best_option', label:'Best Option', cls:'best', icon:'⭐'},
+    {key:'cheapest_option', label:'Cheapest Option', cls:'cheapest', icon:'💚'},
+  ];
+
+  routeOrder.forEach(({key, label, cls, icon}) => {
+    const opt = t[key];
+    if(!opt) return;
+    html += renderRouteCard(opt, label, cls, icon);
+  });
+
+  // Alternative routes
+  if(t.alternative_routes?.length) {
+    html += `<div class="travel-section-header">🔀 Alternative Routes Worth Considering</div>`;
+    t.alternative_routes.forEach((alt, i) => {
+      html += renderRouteCard(alt, alt.label || 'Alternative '+(i+1), 'alt', '💡');
+    });
+  }
+
+  // Pro tips
+  if(t.pro_tips?.length) {
+    html += `<div class="travel-section-header">🧠 Insider Tips</div>
+    <div class="travel-tips-card">`;
+    html += t.pro_tips.map(tip => `<div class="travel-tip-row"><span style="flex-shrink:0;">•</span><span>${tip}</span></div>`).join('');
+    html += `</div>`;
+  }
+
+  // Booking links
+  if(t.book_via?.length) {
+    html += `<div style="font-size:12px;color:var(--text-soft);margin-top:4px;padding:0 4px;">📲 Search on: ${t.book_via.join(' · ')}</div>`;
+  }
+
+  el.innerHTML = html || '<div class="no-content">No travel data found.</div>';
+}
+
+function renderRouteCard(opt, label, cls, icon) {
+  const legs = opt.legs || [];
+  const pros = opt.pros || [];
+  const cons = opt.cons || [];
+  return `<div class="travel-option-card ${cls}">
+    <div><span class="travel-badge ${cls}">${icon} ${label}</span></div>
+    <div class="travel-route-title">${opt.title || ''}</div>
+    <div class="travel-route-sub">${opt.summary || ''}</div>
+    ${legs.length ? `<div class="travel-legs">${legs.map(l=>`<div class="travel-leg"><span class="travel-leg-icon">${l.icon||'→'}</span><span>${l.desc}</span></div>`).join('')}</div>` : ''}
+    ${pros.length||cons.length ? `<div class="travel-pros-cons">
+      ${pros.map(p=>`<span class="travel-pro">✓ ${p}</span>`).join('')}
+      ${cons.map(c=>`<span class="travel-con">✗ ${c}</span>`).join('')}
+    </div>` : ''}
+    <div class="travel-price-row">
+      <div><div class="travel-price-label">Est. Cost</div><div class="travel-price ${cls}">${opt.est_cost || '—'}</div></div>
+      ${opt.book_url ? `<a class="travel-book-btn" href="${opt.book_url}" target="_blank">Search →</a>` : ''}
+    </div>
+  </div>`;
+}
+
+async function findTravel() {
+  if(!checkApiKey()) return;
+  const w = getW(currentId);
+  if(!w.location) { toast('Add a location to this wedding first', 'error'); return; }
+  const origin = document.getElementById('travel-origin').value.trim();
+  if(!origin) { toast('Enter your departure city above', 'error'); document.getElementById('travel-origin').focus(); return; }
+
+  const btn = document.getElementById('travel-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Planning your trip...';
+  document.getElementById('travel-results').innerHTML = '<div class="no-content"><span class="spinner"></span> Analyzing routes from ' + origin + ' to ' + w.location + '...</div>';
+
+  const weddingDate = w.date ? new Date(w.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : 'TBD';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `I need smart travel options from ${origin} to ${w.location} for a wedding on ${weddingDate}.
+
+Think like a savvy travel planner. Don't just suggest the obvious nearest airport. Consider:
+- Direct flights to the closest airport
+- Flying into a major nearby hub and renting a car (sometimes much cheaper or easier)
+- Alternative routing through connecting hubs
+- Train or driving if distance makes sense
+- Red-eye vs daytime flights
+- Which airports have better parking/transit for the return trip
+
+Search for current approximate flight prices and return this JSON only (no markdown, no backticks):
+{
+  "budget_range": "e.g. $400–$900 per person total",
+  "best_option": {
+    "title": "short route name e.g. JFK → HPN direct",
+    "summary": "1-2 sentence why this is the best overall choice",
+    "legs": [
+      {"icon": "✈️", "desc": "Flight: JFK → HPN, ~45 min, Delta/United ~$180–$280 rt"},
+      {"icon": "🚗", "desc": "Car rental or rideshare: 20 min to venue, ~$60/day"}
+    ],
+    "pros": ["No connection", "Short drive to venue"],
+    "cons": ["Smaller airport, fewer flights"],
+    "est_cost": "$240–$340 per person"
+  },
+  "cheapest_option": {
+    "title": "short route name",
+    "summary": "why this saves the most money",
+    "legs": [
+      {"icon": "✈️", "desc": "..."},
+      {"icon": "🚗", "desc": "..."}
+    ],
+    "pros": ["Saves $100+"],
+    "cons": ["Longer drive"],
+    "est_cost": "$150–$220 per person",
+    "book_url": "https://www.google.com/flights"
+  },
+  "alternative_routes": [
+    {
+      "label": "creative label e.g. Hub + Rental",
+      "title": "e.g. Fly into EWR, rent car",
+      "summary": "explain when this makes sense",
+      "legs": [{"icon": "✈️", "desc": "..."}, {"icon": "🚗", "desc": "..."}],
+      "pros": ["More flight options", "Cheaper rental rates"],
+      "cons": ["1.5hr drive"],
+      "est_cost": "$200–$300 per person"
+    }
+  ],
+  "pro_tips": [
+    "Book flights 6–8 weeks out for best prices on this route",
+    "Consider flying back from a different airport to save on return",
+    "Specific actionable tip about this destination"
+  ],
+  "book_via": ["Google Flights", "Kayak", "Scott's Cheap Flights"]
+}`
+        }]
+      })
+    });
+
+    if(!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    const rawText = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed = null;
+    const m = rawText.match(/\{[\s\S]*\}/);
+    if(m) { try { parsed = JSON.parse(m[0]); } catch(e) {} }
+    if(!parsed) throw new Error('Could not parse response');
+
+    w.travel = parsed;
+    w.travel_origin = origin;
+    save(); renderTravel(w); toast('Trip options ready! ✈️');
+  } catch(e) {
+    console.error(e);
+    toast('Search failed — check your API key', 'error');
+    document.getElementById('travel-results').innerHTML = '<div class="no-content">Could not load travel options. Check your API key is set correctly.</div>';
+  }
+  btn.disabled = false; btn.innerHTML = '✈ Plan My Trip';
+}
+
+// ─── LOCATION AUTOCOMPLETE (offline) ──────────────────────
+const CITIES = [
+  ["New York City","NY",40.7128,-74.006],
+  ["Buffalo","NY",42.8864,-78.8784],
+  ["Rochester","NY",43.1566,-77.6088],
+  ["Syracuse","NY",43.0481,-76.1474],
+  ["Albany","NY",42.6526,-73.7562],
+  ["Yonkers","NY",40.9312,-73.8988],
+  ["Southampton","NY",40.884,-72.3898],
+  ["East Hampton","NY",40.9637,-72.1846],
+  ["Westhampton Beach","NY",40.799,-72.644],
+  ["Montauk","NY",41.0359,-71.9547],
+  ["Sag Harbor","NY",40.9998,-72.2932],
+  ["Shelter Island","NY",41.0665,-72.3418],
+  ["Saratoga Springs","NY",43.0831,-73.7846],
+  ["Lake Placid","NY",44.2795,-73.9799],
+  ["Ithaca","NY",42.444,-76.5021],
+  ["Woodstock","NY",42.0415,-74.1143],
+  ["Hudson","NY",42.2529,-73.7921],
+  ["Rhinebeck","NY",41.9284,-73.9129],
+  ["Cold Spring","NY",41.4195,-73.9557],
+  ["Tarrytown","NY",41.0762,-73.8587],
+  ["Oyster Bay","NY",40.8637,-73.5327],
+  ["Garden City","NY",40.7268,-73.6357],
+  ["Fire Island","NY",40.6454,-73.1235],
+  ["Cooperstown","NY",42.7001,-74.9238],
+  ["Catskill","NY",42.2173,-73.8618],
+  ["Beacon","NY",41.5045,-73.9707],
+  ["Los Angeles","CA",34.0522,-118.2437],
+  ["San Francisco","CA",37.7749,-122.4194],
+  ["San Diego","CA",32.7157,-117.1611],
+  ["Sacramento","CA",38.5816,-121.4944],
+  ["San Jose","CA",37.3382,-121.8863],
+  ["Napa","CA",38.2975,-122.2869],
+  ["Sonoma","CA",38.2919,-122.458],
+  ["Carmel","CA",36.5552,-121.9233],
+  ["Santa Barbara","CA",34.4208,-119.6982],
+  ["Palm Springs","CA",33.8303,-116.5453],
+  ["Malibu","CA",34.0259,-118.7798],
+  ["Laguna Beach","CA",33.5427,-117.7854],
+  ["Big Sur","CA",36.2704,-121.8081],
+  ["Lake Tahoe","CA",39.0968,-120.0324],
+  ["Ojai","CA",34.448,-119.2429],
+  ["Temecula","CA",33.4936,-117.1484],
+  ["Paso Robles","CA",35.6369,-120.6908],
+  ["Healdsburg","CA",38.6102,-122.8691],
+  ["Half Moon Bay","CA",37.4636,-122.4286],
+  ["Monterey","CA",36.6002,-121.8947],
+  ["Santa Cruz","CA",36.9741,-122.0308],
+  ["Calistoga","CA",38.5788,-122.5797],
+  ["Yosemite","CA",37.749,-119.5885],
+  ["Santa Monica","CA",34.0195,-118.4912],
+  ["Miami","FL",25.7617,-80.1918],
+  ["Orlando","FL",28.5383,-81.3792],
+  ["Tampa","FL",27.9506,-82.4572],
+  ["Jacksonville","FL",30.3322,-81.6557],
+  ["Key West","FL",24.5551,-81.78],
+  ["Sarasota","FL",27.3364,-82.5307],
+  ["Naples","FL",26.142,-81.7948],
+  ["Palm Beach","FL",26.7056,-80.0364],
+  ["Boca Raton","FL",26.3683,-80.1289],
+  ["Fort Lauderdale","FL",26.1224,-80.1373],
+  ["St Augustine","FL",29.8947,-81.3145],
+  ["Amelia Island","FL",30.6099,-81.4496],
+  ["Clearwater","FL",27.9659,-82.8001],
+  ["Destin","FL",30.3935,-86.4958],
+  ["Islamorada","FL",24.9742,-80.6469],
+  ["Marco Island","FL",25.9412,-81.7179],
+  ["Austin","TX",30.2672,-97.7431],
+  ["Houston","TX",29.7604,-95.3698],
+  ["Dallas","TX",32.7767,-96.797],
+  ["San Antonio","TX",29.4241,-98.4936],
+  ["Fort Worth","TX",32.7555,-97.3308],
+  ["El Paso","TX",31.7619,-106.485],
+  ["Fredericksburg","TX",30.2752,-98.872],
+  ["Wimberley","TX",30.0585,-98.0986],
+  ["Boerne","TX",29.7946,-98.732],
+  ["Marble Falls","TX",30.5782,-98.2728],
+  ["Chicago","IL",41.8781,-87.6298],
+  ["Galena","IL",42.4167,-90.429],
+  ["Atlanta","GA",33.749,-84.388],
+  ["Savannah","GA",32.0809,-81.0912],
+  ["Athens","GA",33.9519,-83.3576],
+  ["Sea Island","GA",31.1835,-81.3935],
+  ["Charleston","SC",32.7765,-79.9311],
+  ["Hilton Head","SC",32.2163,-80.7526],
+  ["Myrtle Beach","SC",33.6891,-78.8867],
+  ["Kiawah Island","SC",32.6079,-80.0826],
+  ["Charlotte","NC",35.2271,-80.8431],
+  ["Asheville","NC",35.5951,-82.5515],
+  ["Raleigh","NC",35.7796,-78.6382],
+  ["Wilmington","NC",34.2257,-77.9447],
+  ["Chapel Hill","NC",35.9132,-79.0558],
+  ["Pinehurst","NC",35.1954,-79.4695],
+  ["Richmond","VA",37.5407,-77.436],
+  ["Virginia Beach","VA",36.8529,-75.978],
+  ["Charlottesville","VA",38.0293,-78.4767],
+  ["Williamsburg","VA",37.2707,-76.7075],
+  ["Alexandria","VA",38.8048,-77.0469],
+  ["Middleburg","VA",38.969,-77.7344],
+  ["Washington DC","DC",38.9072,-77.0369],
+  ["Annapolis","MD",38.9784,-76.4922],
+  ["Baltimore","MD",39.2904,-76.6122],
+  ["Frederick","MD",39.4143,-77.4105],
+  ["Boston","MA",42.3601,-71.0589],
+  ["Cape Cod","MA",41.6688,-70.2962],
+  ["Nantucket","MA",41.2835,-70.0995],
+  ["Martha's Vineyard","MA",41.3805,-70.6456],
+  ["Lenox","MA",42.3568,-73.2832],
+  ["Stockbridge","MA",42.2812,-73.322],
+  ["Provincetown","MA",42.0509,-70.186],
+  ["Plymouth","MA",41.9584,-70.6673],
+  ["Salem","MA",42.5195,-70.8967],
+  ["Newburyport","MA",42.8126,-70.8773],
+  ["Atlantic City","NJ",39.3643,-74.4229],
+  ["Princeton","NJ",40.3573,-74.6672],
+  ["Cape May","NJ",38.9351,-74.906],
+  ["Asbury Park","NJ",40.2204,-74.0121],
+  ["Morristown","NJ",40.7968,-74.4815],
+  ["Philadelphia","PA",39.9526,-75.1652],
+  ["Pittsburgh","PA",40.4406,-79.9959],
+  ["Lancaster","PA",40.0379,-76.3055],
+  ["Gettysburg","PA",39.8309,-77.2311],
+  ["Pocono Mountains","PA",41.1176,-75.3246],
+  ["New Hope","PA",40.3618,-74.9549],
+  ["Denver","CO",39.7392,-104.9903],
+  ["Aspen","CO",39.1911,-106.8175],
+  ["Vail","CO",39.6433,-106.3781],
+  ["Telluride","CO",37.9375,-107.8123],
+  ["Boulder","CO",40.015,-105.2705],
+  ["Colorado Springs","CO",38.8339,-104.8214],
+  ["Breckenridge","CO",39.4817,-106.0384],
+  ["Estes Park","CO",40.3772,-105.5217],
+  ["Nashville","TN",36.1627,-86.7816],
+  ["Memphis","TN",35.1495,-90.049],
+  ["Gatlinburg","TN",35.7143,-83.5118],
+  ["Chattanooga","TN",35.0456,-85.3097],
+  ["Knoxville","TN",35.9606,-83.9207],
+  ["Honolulu","HI",21.3069,-157.8583],
+  ["Maui","HI",20.7984,-156.3319],
+  ["Kauai","HI",22.0964,-159.5261],
+  ["Big Island","HI",19.7241,-155.0868],
+  ["Las Vegas","NV",36.1699,-115.1398],
+  ["Reno","NV",39.5296,-119.8138],
+  ["Lake Tahoe","NV",39.0968,-119.9549],
+  ["Phoenix","AZ",33.4484,-112.074],
+  ["Scottsdale","AZ",33.4942,-111.9261],
+  ["Sedona","AZ",34.8697,-111.761],
+  ["Tucson","AZ",32.2226,-110.9747],
+  ["Portland","OR",45.5051,-122.675],
+  ["Bend","OR",44.0582,-121.3153],
+  ["Cannon Beach","OR",45.8918,-123.9615],
+  ["Ashland","OR",42.1946,-122.7094],
+  ["Seattle","WA",47.6062,-122.3321],
+  ["Spokane","WA",47.6588,-117.426],
+  ["Leavenworth","WA",47.5962,-120.6615],
+  ["Walla Walla","WA",46.0646,-118.343],
+  ["Detroit","MI",42.3314,-83.0458],
+  ["Traverse City","MI",44.7631,-85.6206],
+  ["Mackinac Island","MI",45.8492,-84.6188],
+  ["Ann Arbor","MI",42.2808,-83.743],
+  ["Minneapolis","MN",44.9778,-93.265],
+  ["St Paul","MN",44.9537,-93.09],
+  ["Duluth","MN",46.7867,-92.1005],
+  ["Milwaukee","WI",43.0389,-87.9065],
+  ["Madison","WI",43.0731,-89.4012],
+  ["Door County","WI",44.9419,-87.1336],
+  ["Columbus","OH",39.9612,-82.9988],
+  ["Cleveland","OH",41.4993,-81.6944],
+  ["Cincinnati","OH",39.1031,-84.512],
+  ["New Orleans","LA",29.9511,-90.0715],
+  ["Baton Rouge","LA",30.4515,-91.1871],
+  ["Natchez","MS",31.5604,-91.4032],
+  ["Oxford","MS",34.3665,-89.5191],
+  ["Birmingham","AL",33.5186,-86.8104],
+  ["Mobile","AL",30.6954,-88.0399],
+  ["Little Rock","AR",34.7465,-92.2896],
+  ["Eureka Springs","AR",36.4012,-93.7349],
+  ["Kansas City","MO",39.0997,-94.5786],
+  ["St Louis","MO",38.627,-90.1994],
+  ["Branson","MO",36.644,-93.2185],
+  ["Missoula","MT",46.8721,-113.994],
+  ["Bozeman","MT",45.677,-111.0429],
+  ["Whitefish","MT",48.4113,-114.336],
+  ["Glacier","MT",48.696,-113.718],
+  ["Jackson Hole","WY",43.4799,-110.7624],
+  ["Cheyenne","WY",41.14,-104.8202],
+  ["Boise","ID",43.615,-116.2023],
+  ["Sun Valley","ID",43.6963,-114.3513],
+  ["Coeur d'Alene","ID",47.6777,-116.7805],
+  ["Salt Lake City","UT",40.7608,-111.891],
+  ["Moab","UT",38.5733,-109.5498],
+  ["Park City","UT",40.6461,-111.498],
+  ["St George","UT",37.1041,-113.5841],
+  ["Santa Fe","NM",35.687,-105.9378],
+  ["Albuquerque","NM",35.0844,-106.6504],
+  ["Taos","NM",36.4072,-105.5731],
+  ["Hartford","CT",41.7658,-72.6851],
+  ["New Haven","CT",41.3083,-72.9279],
+  ["Greenwich","CT",41.0262,-73.6282],
+  ["Mystic","CT",41.3543,-71.9668],
+  ["Litchfield","CT",41.7479,-73.1871],
+  ["Providence","RI",41.824,-71.4128],
+  ["Newport","RI",41.4901,-71.3128],
+  ["Burlington","VT",44.4759,-73.2121],
+  ["Stowe","VT",44.4654,-72.6874],
+  ["Woodstock","VT",43.6237,-72.5218],
+  ["Manchester","VT",43.1648,-73.0657],
+  ["Concord","NH",43.2081,-71.5376],
+  ["Portsmouth","NH",43.0718,-70.7626],
+  ["Bretton Woods","NH",44.2659,-71.4467],
+  ["Portland","ME",43.6591,-70.2568],
+  ["Bar Harbor","ME",44.3876,-68.2039],
+  ["Kennebunkport","ME",43.3612,-70.4773],
+  ["Camden","ME",44.2098,-69.0648],
+  ["Wilmington","DE",39.7447,-75.5484],
+  ["Rehoboth Beach","DE",38.7207,-75.0752],
+  ["Ocean City","MD",38.3365,-75.0849],
+  ["St Michaels","MD",38.7851,-76.2244],
+  ["Easton","MD",38.774,-76.0763],
+  ["Indianapolis","IN",39.7684,-86.1581],
+  ["Bloomington","IN",39.1653,-86.5264],
+  ["Louisville","KY",38.2527,-85.7585],
+  ["Lexington","KY",38.0406,-84.5037],
+  ["Versailles","KY",38.0529,-84.7297],
+  ["Charleston","WV",38.3498,-81.6326],
+  ["Greenbrier","WV",37.7826,-80.3009],
+  ["Omaha","NE",41.2565,-95.9345],
+  ["Lincoln","NE",40.8136,-96.7026],
+  ["Des Moines","IA",41.5868,-93.625],
+  ["Wichita","KS",37.6872,-97.3301],
+  ["Sioux Falls","SD",43.5446,-96.7311],
+  ["Rapid City","SD",44.0805,-103.231],
+  ["Deadwood","SD",44.3764,-103.7296],
+  ["Fargo","ND",46.8772,-96.7898],
+  ["Anchorage","AK",61.2181,-149.9003],
+  ["Juneau","AK",58.3005,-134.4197],
+  ["Paris","FR",48.8566,2.3522],
+  ["Rome","IT",41.9028,12.4964],
+  ["Tuscany","IT",43.7711,11.2486],
+  ["Amalfi Coast","IT",40.634,14.6027],
+  ["Venice","IT",45.4408,12.3155],
+  ["Florence","IT",43.7696,11.2558],
+  ["Barcelona","ES",41.3851,2.1734],
+  ["Madrid","ES",40.4168,-3.7038],
+  ["London","GB",51.5074,-0.1278],
+  ["Edinburgh","GB",55.9533,-3.1883],
+  ["Dublin","IE",53.3498,-6.2603],
+  ["Amsterdam","NL",52.3676,4.9041],
+  ["Santorini","GR",36.3932,25.4615],
+  ["Mykonos","GR",37.4467,25.3289],
+  ["Athens","GR",37.9838,23.7275],
+  ["Bali","ID",-8.3405,115.092],
+  ["Cancun","MX",21.1619,-86.8515],
+  ["Los Cabos","MX",22.8905,-109.9167],
+  ["Riviera Maya","MX",20.6296,-87.0739],
+  ["Puerto Vallarta","MX",20.6534,-105.2253],
+  ["Tokyo","JP",35.6762,139.6503],
+  ["Kyoto","JP",35.0116,135.7681],
+  ["Sydney","AU",-33.8688,151.2093],
+  ["Melbourne","AU",-37.8136,144.9631],
+  ["Cape Town","ZA",-33.9249,18.4241],
+  ["Phuket","TH",7.9519,98.3381],
+  ["Maldives","MV",3.2028,73.2207],
+  ["Fiji","FJ",-17.7134,178.065],
+  ["Toronto","CA",43.6532,-79.3832],
+  ["Vancouver","CA",49.2827,-123.1207],
+  ["Montreal","CA",45.5017,-73.5673],
+  ["Banff","CA",51.1784,-115.5708],
+];
+
+function searchCities(query) {
+  if(!query || query.length < 2) return [];
+  const q = query.toLowerCase().trim();
+  const results = [];
+  // Exact name starts-with first, then contains
+  for(const [name, state, lat, lon] of CITIES) {
+    const full = (name + ', ' + state).toLowerCase();
+    const nameLower = name.toLowerCase();
+    if(nameLower.startsWith(q) || full.startsWith(q)) {
+      results.push({name, state, lat, lon, score: 2});
+    } else if(nameLower.includes(q) || full.includes(q)) {
+      results.push({name, state, lat, lon, score: 1});
+    }
+    if(results.length >= 8) break;
+  }
+  // If we got fewer than 4, do a second pass for contains
+  if(results.length < 4) {
+    for(const [name, state, lat, lon] of CITIES) {
+      if(results.find(r => r.name === name && r.state === state)) continue;
+      const full = (name + ' ' + state).toLowerCase();
+      if(full.includes(q)) {
+        results.push({name, state, lat, lon, score: 1});
+      }
+      if(results.length >= 8) break;
+    }
+  }
+  return results.sort((a,b) => b.score - a.score).slice(0,6);
+}
+
+let _locTimer = null;
+let _locResults = [];
+let _locHighlight = -1;
+
+function locationSearch(val) {
+  document.getElementById('f-lat').value = '';
+  document.getElementById('f-lon').value = '';
+  document.getElementById('location-confirmed').style.display = 'none';
+  const box = document.getElementById('location-suggestions');
+
+  if(!val || val.length < 2) { box.style.display = 'none'; return; }
+
+  clearTimeout(_locTimer);
+  _locTimer = setTimeout(() => {
+    const results = searchCities(val);
+    _locResults = results;
+    _locHighlight = -1;
+
+    if(!results.length) {
+      box.innerHTML = '<div class="location-suggestion" style="color:var(--text-soft);cursor:default;font-style:italic;">No matches — type your location and tap Save anyway</div>';
+      box.style.display = 'block';
+      return;
+    }
+
+    box.innerHTML = results.map((r, i) =>
+      `<div class="location-suggestion" data-idx="${i}" onclick="selectLocation(${i})">
+        <strong>${r.name}</strong>, ${r.state}
+      </div>`
+    ).join('');
+    box.style.display = 'block';
+  }, 150);
+}
+
+function selectLocation(idx) {
+  const r = _locResults[idx];
+  if(!r) return;
+  const display = r.name + ', ' + r.state;
+  document.getElementById('f-location').value = display;
+  document.getElementById('f-lat').value = r.lat;
+  document.getElementById('f-lon').value = r.lon;
+  document.getElementById('location-suggestions').style.display = 'none';
+  document.getElementById('location-confirmed').style.display = 'block';
+  _locHighlight = -1;
+}
+
+function locationKeydown(e) {
+  const box = document.getElementById('location-suggestions');
+  const items = box.querySelectorAll('.location-suggestion');
+  if(!items.length || box.style.display === 'none') return;
+  if(e.key === 'ArrowDown') {
+    e.preventDefault();
+    _locHighlight = Math.min(_locHighlight + 1, items.length - 1);
+    items.forEach((el,i) => el.classList.toggle('highlighted', i === _locHighlight));
+  } else if(e.key === 'ArrowUp') {
+    e.preventDefault();
+    _locHighlight = Math.max(_locHighlight - 1, 0);
+    items.forEach((el,i) => el.classList.toggle('highlighted', i === _locHighlight));
+  } else if(e.key === 'Enter' && _locHighlight >= 0) {
+    e.preventDefault();
+    selectLocation(_locHighlight);
+  } else if(e.key === 'Escape') {
+    box.style.display = 'none';
+  }
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('#location-suggestions') && e.target.id !== 'f-location') {
+    const box = document.getElementById('location-suggestions');
+    if(box) box.style.display = 'none';
+  }
+});
+
+
+
+// ── EXPORT / IMPORT ──────────────────────────────────────────────────────────
+function exportData() {
+  const data = {
+    version: 1,
+    exported: new Date().toISOString(),
+    weddings: weddings,
+    apiKey: getApiKey() || undefined,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `wedding-planner-backup-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup downloaded! 📤');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!data.weddings || !Array.isArray(data.weddings)) throw new Error('Invalid file');
+      const count = data.weddings.length;
+      const existing = weddings.length;
+      if(existing > 0) {
+        const choice = confirm(`You have ${existing} wedding(s) already saved.\n\nOK = Merge (keep both)\nCancel = Replace (overwrite with backup)`);
+        if(choice) {
+          // Merge — add any weddings not already in list (by id)
+          const existingIds = new Set(weddings.map(w => w.id));
+          const newOnes = data.weddings.filter(w => !existingIds.has(w.id));
+          weddings = [...weddings, ...newOnes];
+          toast(`Merged! Added ${newOnes.length} wedding(s) 📥`);
+        } else {
+          weddings = data.weddings;
+          toast(`Restored ${count} wedding(s) 📥`);
+        }
+      } else {
+        weddings = data.weddings;
+        toast(`Loaded ${count} wedding(s) 📥`);
+      }
+      if(data.apiKey) saveApiKey(data.apiKey);
+      save();
+      renderDashboard();
+    } catch(err) {
+      toast('Invalid backup file', 'error');
+    }
+  };
+  reader.readAsText(file);
+  // Reset input so same file can be re-imported
+  event.target.value = '';
+}
+
+// ── PWA SERVICE WORKER (inline, registers on hosted version) ─────────────────
+if('serviceWorker' in navigator && location.protocol !== 'file:') {
+  const swCode = `
+    const CACHE = 'wedding-planner-v1';
+    const ASSETS = ['./', './index.html'];
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./')))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+renderDashboard();
+
+// ─── WEATHER ─────────────────────────────────────────────
+const MONTH_CLIMATE = {
+  // avg [high°F, low°F, rain_days, desc] by month index (0=Jan)
+};
+
+function weatherEmoji(desc) {
+  if(!desc) return '🌤';
+  const d = desc.toLowerCase();
+  if(d.includes('thunder')) return '⛈';
+  if(d.includes('snow')) return '❄️';
+  if(d.includes('rain') || d.includes('shower')) return '🌧';
+  if(d.includes('cloud') || d.includes('overcast')) return '☁️';
+  if(d.includes('fog') || d.includes('mist')) return '🌫';
+  if(d.includes('sun') || d.includes('clear')) return '☀️';
+  if(d.includes('wind')) return '💨';
+  return '🌤';
+}
+
+function loadWeatherTab() {
+  const w = getW(currentId);
+  if(!w) return;
+  const el = document.getElementById('weather-content');
+  if(!w.location || !w.date) {
+    el.innerHTML = '<div class="no-content">Add a location and date to this wedding to see weather.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="no-content"><span class="spinner"></span> Loading weather for ' + w.location + '...</div>';
+  renderWeather(w);
+}
+
+
+async function renderWeather(w) {
+  const el = document.getElementById('weather-content');
+  if(!el) { console.error('weather-content element not found'); return; }
+  if(!w.location || !w.date) {
+    el.innerHTML = '<div class="no-content">Add a location and date to this wedding to see weather.</div>';
+    return;
+  }
+  const days = daysUntil(w.date);
+  console.log('renderWeather: location='+w.location+' date='+w.date+' days='+days);
+  el.innerHTML = '<div class="no-content"><span class="spinner"></span> Loading weather for ' + w.location + '...</div>';
+
+  // 0-7 days = NWS live (most accurate)
+  // 8-16 days = Open-Meteo 16-day forecast (good temp estimate, less accurate precip)
+  // 17+ days = historical climate averages
+  if(days >= 0 && days <= 7) {
+    await fetchLiveWeather(w, el, days);
+  } else if(days >= 8 && days <= 16) {
+    await fetchExtendedForecast(w, el, days);
+  } else {
+    await fetchClimateAverage(w, el, days);
+  }
+}
+
+async function fetchExtendedForecast(w, el, days) {
+  try {
+    let lat, lon, name, admin1;
+    if(w.lat && w.lon) {
+      lat = parseFloat(w.lat); lon = parseFloat(w.lon);
+      name = w.location; admin1 = '';
+    } else {
+      const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(w.location)}&count=1&language=en&format=json`);
+      const geoData = await geoRes.json();
+      if(!geoData.results?.length) throw new Error('Location not found — edit the wedding and select from the dropdown');
+      const gr = geoData.results[0];
+      lat = gr.latitude; lon = gr.longitude;
+      name = gr.name; admin1 = gr.admin1 || '';
+    }
+
+    const fcUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=16`;
+    const fcRes = await fetch(fcUrl);
+    const fcData = await fcRes.json();
+    if(!fcData.daily) throw new Error('No forecast data');
+
+    const wDate = new Date(w.date + 'T00:00:00');
+    const targetIdx = fcData.daily.time.findIndex(t => {
+      const d = new Date(t + 'T00:00:00');
+      return d.getFullYear()===wDate.getFullYear() && d.getMonth()===wDate.getMonth() && d.getDate()===wDate.getDate();
+    });
+    if(targetIdx === -1) throw new Error('Wedding date outside forecast window');
+
+    const high   = Math.round(fcData.daily.temperature_2m_max[targetIdx]);
+    const low    = Math.round(fcData.daily.temperature_2m_min[targetIdx]);
+    const precip = fcData.daily.precipitation_probability_max[targetIdx];
+    const wind   = Math.round(fcData.daily.windspeed_10m_max[targetIdx]);
+    const wcode  = fcData.daily.weathercode[targetIdx];
+
+    const upcoming = fcData.daily.time.slice(0, Math.min(7, fcData.daily.time.length)).map((t, i) => ({
+      date: new Date(t + 'T00:00:00'),
+      high: Math.round(fcData.daily.temperature_2m_max[i]),
+      low:  Math.round(fcData.daily.temperature_2m_min[i]),
+      precip: fcData.daily.precipitation_probability_max[i],
+      code: fcData.daily.weathercode[i],
+    }));
+
+    el.innerHTML = `
+      <div class="weather-hero" style="background:linear-gradient(135deg,#c47a2a,#e8a84a);">
+        <div class="weather-badge" style="background:rgba(255,255,255,0.25);">⚠️ Extended Forecast · ${days} Days Out</div>
+        <div style="font-size:32px;margin-bottom:4px;">${wmoEmoji(wcode)}</div>
+        <div class="weather-temp">${high}°F</div>
+        <div class="weather-temp-sub">Low ${low}°F · ${wmoDescription(wcode)}</div>
+        <div class="weather-desc">${name}${admin1 ? ', '+admin1 : ''}</div>
+      </div>
+      <div style="background:#fff8f0;border:1.5px solid #e8c8a0;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#7a5a2a;line-height:1.6;">
+        ⚠️ <strong>Heads up:</strong> Extended forecasts beyond 7 days are less reliable — temps are usually within 5–8°F, but precipitation is harder to call. Good enough for packing decisions.
+      </div>
+      <div class="weather-grid">
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌡</div><div class="weather-stat-val">${high}°F</div><div class="weather-stat-label">Forecast High</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌙</div><div class="weather-stat-val">${low}°F</div><div class="weather-stat-label">Forecast Low</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌧</div><div class="weather-stat-val">${precip != null ? precip+'%' : '—'}</div><div class="weather-stat-label">Rain Chance</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">💨</div><div class="weather-stat-val">${wind} mph</div><div class="weather-stat-label">Wind</div></div>
+      </div>
+      <div class="info-card-title" style="margin:14px 0 8px;">Next 7 Days</div>
+      ${upcoming.map(p => {
+        const dayName = p.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+        const isWedding = p.date.toDateString() === wDate.toDateString();
+        return '<div class="forecast-card" style="' + (isWedding ? 'border-color:#a0622a;background:#fff8f0;' : '') + '">'
+          + '<div class="forecast-day" style="width:60px;">' + (isWedding ? '💍' : dayName) + '</div>'
+          + '<div class="forecast-icon">' + wmoEmoji(p.code) + '</div>'
+          + '<div class="forecast-desc">' + wmoDescription(p.code) + (p.precip ? ' · '+p.precip+'% rain' : '') + '</div>'
+          + '<div class="forecast-temps">' + p.high + '°<span> / ' + p.low + '°</span></div>'
+          + '</div>';
+      }).join('')}
+      <div class="weather-tip">📡 <strong>NWS live forecast</strong> becomes available ${days - 7} days before the wedding — check back then for pinpoint accuracy.</div>
+      <div class="weather-source">Source: Open-Meteo 16-day forecast · Updated daily · No API key needed</div>
+    `;
+  } catch(e) {
+    console.error('Extended forecast error:', e);
+    el.innerHTML = '<div class="weather-tip" style="color:#c0392b;">⚠️ Extended forecast failed: ' + e.message + '<br>Falling back to historical data...</div>';
+    await fetchClimateAverage(w, el, days, true);
+  }
+}
+
+function wmoDescription(code) {
+  const codes = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Light showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Heavy thunderstorm'};
+  return codes[code] || 'Mixed conditions';
+}
+
+function wmoEmoji(code) {
+  if(code===0) return '☀️';
+  if(code<=2) return '🌤';
+  if(code===3) return '☁️';
+  if(code<=48) return '🌫';
+  if(code<=55) return '🌦';
+  if(code<=65) return '🌧';
+  if(code<=77) return '❄️';
+  if(code<=82) return '🌧';
+  if(code<=86) return '🌨';
+  return '⛈';
+}
+
+async function fetchLiveWeather(w, el, days) {
+  try {
+    // Use stored coords if available, otherwise geocode via Nominatim
+    let lat, lon, name, admin1;
+    if(w.lat && w.lon) {
+      lat = parseFloat(w.lat); lon = parseFloat(w.lon);
+      name = w.location; admin1 = '';
+    } else {
+      const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(w.location)}&count=1&language=en&format=json`);
+      const geoData = await geoRes.json();
+      if(!geoData.results?.length) throw new Error('Location not found — edit the wedding and select from the dropdown');
+      const gr = geoData.results[0];
+      lat = gr.latitude; lon = gr.longitude;
+      name = gr.name; admin1 = gr.admin1 || '';
+    }
+
+    // Step 2: get NWS grid point
+    const pointRes = await fetch(`https://api.weather.gov/points/${lat.toFixed(4)},${lon.toFixed(4)}`);
+    if(!pointRes.ok) throw new Error('NWS unavailable for this location');
+    const pointData = await pointRes.json();
+    const forecastUrl = pointData.properties.forecast;
+
+    // Step 3: get forecast
+    const fcRes = await fetch(forecastUrl);
+    const fcData = await fcRes.json();
+    const periods = fcData.properties.periods;
+
+    // Find the wedding day period
+    const weddingDate = new Date(w.date + 'T00:00:00');
+    const dayPeriods = periods.filter(p => {
+      const pd = new Date(p.startTime);
+      return pd.getFullYear() === weddingDate.getFullYear() &&
+             pd.getMonth() === weddingDate.getMonth() &&
+             pd.getDate() === weddingDate.getDate();
+    });
+
+    const dayFc = dayPeriods.find(p=>p.isDaytime) || periods[0];
+    const nightFc = dayPeriods.find(p=>!p.isDaytime);
+
+    const emoji = weatherEmoji(dayFc.shortForecast);
+    const wind = dayFc.windSpeed + ' ' + dayFc.windDirection;
+    const humidity = dayFc.relativeHumidity?.value ? dayFc.relativeHumidity.value + '%' : '—';
+    const precip = dayFc.probabilityOfPrecipitation?.value != null ? dayFc.probabilityOfPrecipitation.value + '%' : '—';
+
+    // Next 7 days summary (daytime only)
+    const upcoming = periods.filter(p=>p.isDaytime).slice(0,5);
+
+    el.innerHTML = `
+      <div class="weather-hero live">
+        <div class="weather-badge live">🔴 Live NWS Forecast</div>
+        <div style="font-size:32px;margin-bottom:4px;">${emoji}</div>
+        <div class="weather-temp">${dayFc.temperature}°${dayFc.temperatureUnit}</div>
+        <div class="weather-desc">${dayFc.shortForecast}</div>
+        <div class="weather-temp-sub">${name}, ${admin1}</div>
+      </div>
+      <div class="weather-grid">
+        <div class="weather-stat-card"><div class="weather-stat-icon">💧</div><div class="weather-stat-val">${precip}</div><div class="weather-stat-label">Rain Chance</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">💨</div><div class="weather-stat-val">${wind}</div><div class="weather-stat-label">Wind</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌡</div><div class="weather-stat-val">${humidity}</div><div class="weather-stat-label">Humidity</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌙</div><div class="weather-stat-val">${nightFc ? nightFc.temperature+'°' : '—'}</div><div class="weather-stat-label">Night Low</div></div>
+      </div>
+      <div class="info-card-title" style="margin:14px 0 8px;">5-Day Outlook</div>
+      ${upcoming.map(p=>{
+        const d = new Date(p.startTime);
+        const dayName = d.toLocaleDateString('en-US',{weekday:'short'});
+        return `<div class="forecast-card">
+          <div class="forecast-day">${dayName}</div>
+          <div class="forecast-icon">${weatherEmoji(p.shortForecast)}</div>
+          <div class="forecast-desc">${p.shortForecast}</div>
+          <div class="forecast-temps">${p.temperature}°<span>${p.temperatureUnit}</span></div>
+        </div>`;
+      }).join('')}
+      <div class="weather-tip">📋 <strong>Day-of tip:</strong> ${dayFc.detailedForecast ? dayFc.detailedForecast.substring(0,180)+'...' : 'Check back closer to the date for more details.'}</div>
+      <div class="weather-source">Source: National Weather Service (weather.gov) · Updated live</div>
+    `;
+  } catch(e) {
+    console.error('Live weather error:', e);
+    el.innerHTML = '<div class="weather-tip" style="color:#c0392b;">⚠️ Live forecast failed: ' + e.message + '<br>Falling back to historical data...</div>';
+    await fetchClimateAverage(w, el, days, true);
+  }
+}
+
+async function fetchClimateAverage(w, el, days, fallback=false) {
+  try {
+    // Use stored coords if available, otherwise geocode
+    let lat, lon, name, admin1;
+    if(w.lat && w.lon) {
+      lat = parseFloat(w.lat); lon = parseFloat(w.lon);
+      name = w.location; admin1 = '';
+    } else {
+      const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(w.location)}&count=1&language=en&format=json`);
+      const geoData = await geoRes.json();
+      if(!geoData.results?.length) throw new Error('Location not found — edit the wedding and select from the dropdown');
+      const gr = geoData.results[0];
+      lat = gr.latitude; lon = gr.longitude;
+      name = gr.name; admin1 = gr.admin1 || '';
+    }
+
+    const wDate = new Date(w.date + 'T00:00:00');
+    const month = wDate.getMonth() + 1;
+    const monthStr = String(month).padStart(2,'0');
+
+    // Fetch last 5 years of the same full month for solid averages
+    const years = [2023, 2022, 2021, 2020, 2019];
+    const requests = years.map(y => {
+      // Get days in that month for that year
+      const daysInMonth = new Date(y, month, 0).getDate();
+      const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-${monthStr}-01&end_date=${y}-${monthStr}-${daysInMonth}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+      return fetch(url).then(r => r.json()).catch(() => null);
+    });
+
+    const results = await Promise.all(requests);
+
+    // Aggregate all valid data
+    let allHighs = [], allLows = [], allPrecips = [], allWinds = [];
+    results.forEach(r => {
+      if(!r || !r.daily) return;
+      (r.daily.temperature_2m_max || []).forEach(v => { if(v != null) allHighs.push(v); });
+      (r.daily.temperature_2m_min || []).forEach(v => { if(v != null) allLows.push(v); });
+      (r.daily.precipitation_sum || []).forEach(v => { if(v != null) allPrecips.push(v); });
+      (r.daily.windspeed_10m_max || []).forEach(v => { if(v != null) allWinds.push(v); });
+    });
+
+    if(allHighs.length === 0) throw new Error('No climate data returned');
+
+    const avg = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+    const avgHigh  = Math.round(avg(allHighs));
+    const avgLow   = Math.round(avg(allLows));
+    const avgPrecip = allPrecips.length ? (avg(allPrecips) * 30).toFixed(1) : null; // monthly total estimate
+    const avgWind  = allWinds.length ? Math.round(avg(allWinds)) : null;
+    // Rain days = days where precip > 0.01"
+    const rainDays = allPrecips.filter(v => v > 0.01).length / years.length;
+
+    const monthName = wDate.toLocaleDateString('en-US', {month:'long'});
+    const nwsNote = days > 16
+      ? `Extended 16-day forecast unlocks in ${days-16} days. Live NWS forecast unlocks in ${days-7} days.`
+      : '';
+    const seasonDesc = getSeasonDesc(month, String(avgHigh));
+
+    el.innerHTML = `
+      <div class="weather-hero avg">
+        <div class="weather-badge avg">${fallback ? '⚠️ Forecast Unavailable · ' : ''}📊 Historical Averages</div>
+        <div style="font-size:32px;margin-bottom:4px;">${getClimateEmoji(month, avgHigh)}</div>
+        <div class="weather-temp">${avgHigh}°F</div>
+        <div class="weather-temp-sub">avg high · ${avgLow}°F avg low</div>
+        <div class="weather-desc">${monthName} in ${name}${admin1 ? ', '+admin1 : ''}</div>
+      </div>
+      <div class="weather-grid">
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌡</div><div class="weather-stat-val">${avgHigh}°F</div><div class="weather-stat-label">Avg High</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌙</div><div class="weather-stat-val">${avgLow}°F</div><div class="weather-stat-label">Avg Low</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">🌧</div><div class="weather-stat-val">${Math.round(rainDays)} days</div><div class="weather-stat-label">Avg Rain Days</div></div>
+        <div class="weather-stat-card"><div class="weather-stat-icon">💨</div><div class="weather-stat-val">${avgWind != null ? avgWind+' mph' : '—'}</div><div class="weather-stat-label">Avg Wind</div></div>
+      </div>
+      <div class="weather-tip">🌿 <strong>What to expect:</strong> ${seasonDesc}</div>
+      ${nwsNote ? `<div class="weather-tip" style="margin-top:8px;">📡 <strong>Better forecasts coming:</strong> ${nwsNote}</div>` : ''}
+      <div class="weather-source">Based on 5-year historical average (2019–2023) for ${monthName} · Source: Open-Meteo Archive</div>
+    `;
+  } catch(e) {
+    console.error('Climate average error:', e);
+    // Last resort — show manual seasonal info
+    const wDate = new Date(w.date + 'T00:00:00');
+    const month = wDate.getMonth() + 1;
+    const monthName = wDate.toLocaleDateString('en-US',{month:'long'});
+    el.innerHTML = `
+      <div class="weather-hero avg">
+        <div class="weather-badge avg">📊 Seasonal Guide</div>
+        <div style="font-size:32px;margin-bottom:8px;">${getClimateEmoji(month, null)}</div>
+        <div class="weather-desc">${monthName} in ${w.location}</div>
+      </div>
+      <div class="weather-tip">🌿 ${getSeasonDesc(month, null)}</div>
+      <div class="weather-tip" style="margin-top:8px;color:#c0392b;">⚠️ Could not load historical data — check that the location name is specific (e.g. "Napa, CA" not just "Napa").</div>
+    `;
+  }
+}
+
+function getClimateEmoji(month, highF) {
+  highF = parseFloat(highF);
+  if(isNaN(highF)) return '🌤';
+  if(highF >= 90) return '🌞';
+  if(highF >= 75) return '☀️';
+  if(highF >= 60) return '🌤';
+  if(highF >= 45) return '🌥';
+  if(highF >= 32) return '🥶';
+  return '❄️';
+}
+
+function getSeasonDesc(month, avgHighStr) {
+  const h = parseFloat(avgHighStr);
+  const descs = {
+    1: 'January is typically cold. Expect chilly temps — layers and a warm coat are a must.',
+    2: 'February remains cold in most regions. Pack accordingly for an indoor or heated venue.',
+    3: 'March weather is unpredictable — could be crisp or starting to warm. Bring a light jacket.',
+    4: 'April is mild in many regions but can be rainy. A stylish layer works well.',
+    5: 'May is generally pleasant with warm days and mild evenings. Great outdoor wedding weather.',
+    6: 'June is warm and often sunny — light fabrics are ideal. Watch for afternoon heat.',
+    7: 'July is typically hot. Opt for breathable fabrics and stay hydrated.',
+    8: 'August is usually the hottest month. Light, airy attire strongly recommended.',
+    9: 'September is pleasantly warm with cooler evenings starting. A light layer for after sunset.',
+    10: 'October brings crisp fall air. Stylish layers and closed-toe shoes work well.',
+    11: 'November is cool to cold. A smart coat or blazer over your outfit is essential.',
+    12: 'December is cold in most regions. Plan for layers and an elegant coat.'
+  };
+  return descs[month] || 'Check local forecasts as the date approaches.';
+}
+
+</script>
+</body>
+</html>
